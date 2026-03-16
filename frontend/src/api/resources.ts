@@ -1,0 +1,14 @@
+import { api } from "../services/api";
+import type { CreateResourceDto, ResourceDto} from "../types/resource";
+
+export const getResources = () => 
+    api.get<ResourceDto[]>("resources").then(res => res.data)
+
+export const getResource = (id: number) =>
+    api.get<ResourceDto>(`/resources/${id}`).then(res => res.data)
+
+export const createResource = (dto: CreateResourceDto) =>
+    api.post<ResourceDto>("/resources", dto).then(res => res.data)
+
+export const deleteResourceApi = (id: number) =>
+    api.delete(`/resources/${id}`)
