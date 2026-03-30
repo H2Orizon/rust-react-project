@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
 #[sea_orm(rs_type = "String", db_type = "Text")]
+#[serde(rename_all = "lowercase")]
 pub enum BookingStatus{
     #[sea_orm(string_value = "pending")]
     Pending,

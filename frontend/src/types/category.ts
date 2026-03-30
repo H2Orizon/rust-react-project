@@ -3,3 +3,8 @@ export type CategoryDto = {
     name: string
     description: string
 }
+
+export type CreateCategory = {
+    name: string
+    description: string
+}

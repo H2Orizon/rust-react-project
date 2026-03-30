@@ -9,10 +9,10 @@ use crate::enums::user_role::UserRole;
 pub struct Claims{
     pub sub: i32,
     pub exp: usize,
-    pub role: UserRole
+    pub role: UserRole,
 }
 
-pub fn create_token(user_id: i32, secret: &str) -> String{
+pub fn create_token(user_id: i32, secret: &str, user_role: UserRole) -> String{
     let expiration = Utc::now()
     .checked_add_signed(Duration::hours(24))
     .unwrap()
@@ -21,7 +21,7 @@ pub fn create_token(user_id: i32, secret: &str) -> String{
     let claims = Claims{
         sub: user_id,
         exp: expiration,
-        role: UserRole::User
+        role: user_role
     };
 
     encode(

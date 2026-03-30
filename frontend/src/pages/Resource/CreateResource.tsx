@@ -1,4 +1,4 @@
-import ResourceForm from "../components/ResourceForm"
+import ResourceForm from "../../components/Resource/ResourceForm"
 
 export default function CreateResource() {
     return(

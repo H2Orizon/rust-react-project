@@ -15,10 +15,11 @@ pub async fn get_all_categories(db: &State<DatabaseConnection>) -> Result<Json<V
 }
 
 #[post("/", data="<dto>")]
-pub async fn create_category(db: &State<DatabaseConnection>, dto: Json<category_model::CreateCategory>, /*user: AuthUser*/) -> Result<Json<category_model::Model>, Status>{
-    // if user.role != UserRole::Admin {
-    //     Err(Status::Locked)?;
-    // }
+pub async fn create_category(db: &State<DatabaseConnection>, dto: Json<category_model::CreateCategory>, user: AuthUser) -> Result<Json<category_model::Model>, Status>{
+    if user.role != UserRole::Admin {
+        println!("Role?: {:?}", user.role);
+        Err(Status::Forbidden)?;
+    }
     match category_service::create(db, dto.into_inner()).await {
         Ok(category) => Ok(Json(category)),
         Err(_) => Err(Status::InternalServerError)

@@ -2,7 +2,7 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::models::category_model;
+use crate::models::{category_model, user_model};
 
 #[derive(Clone, Debug, DeriveEntityModel, PartialEq, Serialize)]
 #[sea_orm(table_name = "resources")]
@@ -15,7 +15,8 @@ pub struct Model{
     pub capacity: i32,
     pub location: String,
     pub created_at: DateTime,
-    pub category_id: i32
+    pub category_id: i32,
+    pub user_id: i32
 }
 
 #[derive(Serialize)]
@@ -27,7 +28,9 @@ pub struct ResourceDto{
     pub capacity: i32,
     pub location: String,
     pub created_at: DateTime,
-    pub category: String
+    pub category: String,
+    pub username: String,
+    pub user_id: i32
 }
 
 #[derive(Deserialize, Validate, Debug)]
@@ -51,6 +54,11 @@ pub struct CreateResource{
     pub category_id: i32
 }
 
+#[derive(FromForm, Debug)]
+pub struct ResourceQuery{
+    pub user_id: Option<i32>
+}
+
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
@@ -59,11 +67,23 @@ pub enum Relation {
         to = "category_model::Column::Id"
     )]
     Category,
+    #[sea_orm(
+        belongs_to = "crate::models::user_model::Entity"
+        from = "Column::UserId"
+        to = "user_model::Column::Id"
+    )]
+    Users,
 }
 
 impl Related<category_model::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Category.def()
+    }
+}
+
+impl Related<user_model::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
     }
 }
 

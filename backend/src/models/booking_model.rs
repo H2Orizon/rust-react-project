@@ -33,12 +33,19 @@ pub struct BookingDto{
     pub created_at: DateTime
 }
 
-#[derive(Deserialize, Debug, Serialize, Validate)]
+#[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct CreateBooking{
+    pub resource_id: i32,
+    pub user_id: i32,
     pub location: Option<String>,
     pub start_date: chrono::NaiveDateTime,
     pub end_date: chrono::NaiveDateTime,
     pub quantity: Option<i32>
+}
+
+#[derive(FromForm, Debug)]
+pub struct BookingQuery{
+    pub user_id: Option<i32>
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]

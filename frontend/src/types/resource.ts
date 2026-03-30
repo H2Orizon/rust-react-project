@@ -6,6 +6,8 @@ export type ResourceDto = {
     capacity: number
     location?: string
     category: string
+    username: string,
+    user_id: number
 }
 
 export type CreateResourceDto = {

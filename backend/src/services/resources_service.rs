@@ -1,8 +1,8 @@
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, DatabaseConnection, EntityTrait, ModelTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{models::{category_model::Entity as CategoriesEntity, 
-    resource_model::{ActiveModel, CreateResource, Entity, Model, ResourceDto, UpdateResource}}};
+use crate::{auth::guard::AuthUser, models::{category_model::Entity as CategoriesEntity, 
+    resource_model::{ActiveModel, Column, CreateResource, Entity, Model, ResourceDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}};
 
 
 pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, sea_orm::DbErr>{
@@ -12,12 +12,21 @@ pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, sea
     Ok(resource)
 }
 
-pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<ResourceDto>, sea_orm::DbErr>{
-    let resources = Entity::find().all(db).await?;
+pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Result<Vec<ResourceDto>, sea_orm::DbErr>{
+    
+    let mut query = Entity::find()
+        .find_also_related(CategoriesEntity)
+        .find_also_related(UserEntity);
+
+    if let Some(user_id) = query_param.user_id{
+        query = query.filter(Column::UserId.eq(user_id))
+    }
+    
+    let resources = query.all(db).await?;
+
     let mut resources_dtos = Vec::new();
 
-    for res in resources {
-        let category = res.find_related(CategoriesEntity).one(db).await?;
+    for (res, category, user) in resources {
         resources_dtos.push(ResourceDto{
             id: res.id,
             name: res.name,
@@ -26,7 +35,9 @@ pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<ResourceDto>, sea_or
             location: res.location,
             created_at: res.created_at,
             capacity: res.capacity,
-            category: category.map(|c| c.name).unwrap()
+            category: category.map(|c| c.name).unwrap_or("Unknown".into()),
+            username: user.map(|u| u.username).unwrap_or("Unknown".into()),
+            user_id: res.user_id
         });
     }
     Ok(resources_dtos)
@@ -34,8 +45,9 @@ pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<ResourceDto>, sea_or
 
 pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, sea_orm::DbErr>{
     let resource = get_one_model(db, id).await?;
-    let category = resource.find_related(CategoriesEntity).one(db).await?
+    let category_name = resource.find_related(CategoriesEntity).one(db).await?
     .unwrap().name;
+    let username = resource.find_related(UserEntity).one(db).await?.unwrap().username;
     Ok(
         ResourceDto { 
         id: resource.id, 
@@ -45,11 +57,13 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, sea
         location: resource.location,
         created_at: resource.created_at,
         capacity: resource.capacity,
-        category: category
+        category: category_name,
+        username: username,
+        user_id: resource.user_id
     })
 }
 
-pub async fn create(db: &DatabaseConnection, data:CreateResource) -> Result<Model, sea_orm::DbErr>{
+pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser) -> Result<Model, sea_orm::DbErr>{
     data.validate().map_err(|e| {
         println!("{e}");
         sea_orm::DbErr::Custom(e.to_string())
@@ -62,6 +76,7 @@ pub async fn create(db: &DatabaseConnection, data:CreateResource) -> Result<Mode
         capacity: Set(data.capacity.unwrap_or(1)),
         location: Set(data.location),
         price: Set(data.price),
+        user_id: Set(user.id),
         ..Default::default()
     };
 
@@ -69,9 +84,8 @@ pub async fn create(db: &DatabaseConnection, data:CreateResource) -> Result<Mode
 }
 
 pub async fn update(db: &DatabaseConnection, id:i32, update_dto: UpdateResource) -> Result<Model, sea_orm::DbErr>{
-    let resource = get_one_model(db, id).await?;
     
-    let mut resource:ActiveModel = resource.into();
+    let mut resource:ActiveModel = get_one_model(db, id).await?.into();
 
     if let Some(name) = update_dto.name {
         resource.name = Set(name)

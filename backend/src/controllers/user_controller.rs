@@ -19,3 +19,11 @@ pub async fn register(db: &State<DatabaseConnection>, form:Json<CreateUser>) -> 
         Err(_) => Err(Status::InternalServerError)
     }
 }
+
+#[get("/<id>")]
+pub async fn get_profile(db: &State<DatabaseConnection>, id: i32) -> Result<Json<UserDto>, Status> {
+    match user_service::get_user(db, id).await {
+        Ok(user) => Ok(Json(user)),
+        Err(_) => Err(Status::InternalServerError)
+    }
+}
