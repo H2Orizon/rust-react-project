@@ -1,20 +1,20 @@
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, DatabaseConnection, EntityTrait};
 use validator::Validate;
-use crate::models::category_model::{ActiveModel, CreateCategory, Entity, Model};
+use crate::{enums::app_error::AppError, models::category_model::{ActiveModel, CreateCategory, Entity, Model}};
 
-pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<Model>, sea_orm::DbErr> {
+pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<Model>, AppError> {
     let categories = Entity::find().all(db).await?;
     Ok(categories)
 }
 
-pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<Model, sea_orm::DbErr>{
+pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{
     let category = Entity::find_by_id(id).one(db).await?
-    .ok_or(sea_orm::DbErr::RecordNotFound("Resource not found".into()))?;
+    .ok_or(AppError::CategoryNotFound())?;
     Ok(category)
 }
 
-pub async fn create(db: &DatabaseConnection, data: CreateCategory) -> Result<Model, sea_orm::DbErr> {
-    data.validate().map_err(|e| sea_orm::DbErr::Custom(e.to_string()))?;
+pub async fn create(db: &DatabaseConnection, data: CreateCategory) -> Result<Model, AppError> {
+    data.validate().map_err(|e| AppError::Validation(e.to_string()))?;
 
     let new_category = ActiveModel{
         name: Set(data.name),
@@ -22,7 +22,7 @@ pub async fn create(db: &DatabaseConnection, data: CreateCategory) -> Result<Mod
         ..Default::default()
     };
 
-    new_category.insert(db).await
+    Ok(new_category.insert(db).await?)
 }
 
 // pub async fn delete(db: &DatabaseConnection, id: i32) -> Result<(), sea_orm::DbErr>{

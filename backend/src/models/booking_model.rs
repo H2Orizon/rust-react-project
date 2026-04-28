@@ -1,6 +1,7 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
+use chrono::{DateTime, Utc, NaiveDateTime};
 
 use crate::{enums::booking_status::BookingStatus, models::{resource_model, user_model}};
 
@@ -13,24 +14,31 @@ pub struct Model {
     pub resource_id: i32,
     pub quantity: i32,
     pub location: Option<String>,
-    pub start_date: DateTime,
-    pub end_date: DateTime,
+    pub start_date: NaiveDateTime,
+    pub end_date: NaiveDateTime,
     pub status: BookingStatus,
-    pub created_at: DateTime
+    pub created_at: NaiveDateTime
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct UpdateStatus{
+    pub status: BookingStatus
+}
 
 #[derive(Serialize)]
 pub struct BookingDto{
     pub id: i32,
     pub username: String,
+    pub user_id: i32,
+    pub lessor_id: i32,
     pub resource_name: String,
+    pub resource_id: i32,
     pub quantity: i32,
     pub location: Option<String>,
-    pub start_date: DateTime,
-    pub end_date: DateTime,
+    pub start_date: DateTime<Utc>,
+    pub end_date: DateTime<Utc>,
     pub status: BookingStatus,
-    pub created_at: DateTime
+    pub created_at: DateTime<Utc>
 }
 
 #[derive(Debug, Deserialize, Serialize, Validate)]
@@ -38,14 +46,16 @@ pub struct CreateBooking{
     pub resource_id: i32,
     pub user_id: i32,
     pub location: Option<String>,
-    pub start_date: chrono::NaiveDateTime,
-    pub end_date: chrono::NaiveDateTime,
+    pub start_date: DateTime<Utc>,
+    pub end_date: DateTime<Utc>,
     pub quantity: Option<i32>
 }
 
 #[derive(FromForm, Debug)]
 pub struct BookingQuery{
-    pub user_id: Option<i32>
+    pub user_id: Option<i32>,
+    pub status: Option<BookingStatus>,
+    pub lessor_id: Option<i32>
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]

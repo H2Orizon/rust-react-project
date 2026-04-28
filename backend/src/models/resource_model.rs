@@ -1,4 +1,5 @@
-use sea_orm::entity::prelude::*;
+use chrono::{DateTime, Utc, NaiveDateTime};
+use sea_orm::{entity::prelude::*};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -14,7 +15,7 @@ pub struct Model{
     pub price: f32,
     pub capacity: i32,
     pub location: String,
-    pub created_at: DateTime,
+    pub created_at: NaiveDateTime,
     pub category_id: i32,
     pub user_id: i32
 }
@@ -26,11 +27,23 @@ pub struct ResourceDto{
     pub description: String,
     pub price: f32,
     pub capacity: i32,
+    pub availble_now: i32,
+    pub next_available_at: Option<DateTime<Utc>>,
     pub location: String,
-    pub created_at: DateTime,
     pub category: String,
     pub username: String,
     pub user_id: i32
+}
+
+#[derive(Serialize)]
+pub struct ResourceListDto{
+    pub id: i32,
+    pub name: String,
+    pub price: f32,
+    pub capacity: i32,
+    pub availble_now: i32,
+    pub location: String,
+    pub category: String,
 }
 
 #[derive(Deserialize, Validate, Debug)]

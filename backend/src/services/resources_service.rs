@@ -1,22 +1,20 @@
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::guard::AuthUser, models::{category_model::Entity as CategoriesEntity, 
-    resource_model::{ActiveModel, Column, CreateResource, Entity, Model, ResourceDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}};
+use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::Entity as CategoriesEntity, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
 
 
-pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, sea_orm::DbErr>{
+pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{
     let resource = Entity::find_by_id(id).one(db)
     .await?
-    .ok_or(sea_orm::DbErr::RecordNotFound("Resource not found".into()))?;
+    .ok_or(AppError::ResourceNotFound())?;
     Ok(resource)
 }
 
-pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Result<Vec<ResourceDto>, sea_orm::DbErr>{
+pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Result<Vec<ResourceListDto>, AppError>{
     
     let mut query = Entity::find()
-        .find_also_related(CategoriesEntity)
-        .find_also_related(UserEntity);
+        .find_also_related(CategoriesEntity);
 
     if let Some(user_id) = query_param.user_id{
         query = query.filter(Column::UserId.eq(user_id))
@@ -26,28 +24,33 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
 
     let mut resources_dtos = Vec::new();
 
-    for (res, category, user) in resources {
-        resources_dtos.push(ResourceDto{
+    for (res, category) in resources {
+
+        let booked = booking_service::get_resource_booked(db, res.id).await?;
+
+
+        resources_dtos.push(ResourceListDto{
             id: res.id,
             name: res.name,
-            description: res.description,
             price: res.price,
             location: res.location,
-            created_at: res.created_at,
             capacity: res.capacity,
+            availble_now: res.capacity - booked,
             category: category.map(|c| c.name).unwrap_or("Unknown".into()),
-            username: user.map(|u| u.username).unwrap_or("Unknown".into()),
-            user_id: res.user_id
         });
     }
     Ok(resources_dtos)
 }
 
-pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, sea_orm::DbErr>{
+pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, AppError>{
     let resource = get_one_model(db, id).await?;
+    println!("MODEL: {:?}", resource);
     let category_name = resource.find_related(CategoriesEntity).one(db).await?
     .unwrap().name;
     let username = resource.find_related(UserEntity).one(db).await?.unwrap().username;
+
+    let booked = booking_service::get_resource_booked(db, resource.id).await?;
+
     Ok(
         ResourceDto { 
         id: resource.id, 
@@ -55,18 +58,19 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, sea
         description: resource.description,
         price: resource.price,
         location: resource.location,
-        created_at: resource.created_at,
         capacity: resource.capacity,
+        availble_now: resource.capacity - booked,
+        next_available_at: booking_service::get_next_availeble(db, resource.id).await?,
         category: category_name,
         username: username,
         user_id: resource.user_id
     })
 }
 
-pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser) -> Result<Model, sea_orm::DbErr>{
+pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser) -> Result<Model, AppError>{
     data.validate().map_err(|e| {
         println!("{e}");
-        sea_orm::DbErr::Custom(e.to_string())
+        AppError::Validation(e.to_string())
     })?;
 
     let new_resource = ActiveModel{
@@ -80,10 +84,10 @@ pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser)
         ..Default::default()
     };
 
-    new_resource.insert(db).await
+    Ok(new_resource.insert(db).await?)
 }
 
-pub async fn update(db: &DatabaseConnection, id:i32, update_dto: UpdateResource) -> Result<Model, sea_orm::DbErr>{
+pub async fn update(db: &DatabaseConnection, id:i32, update_dto: UpdateResource) -> Result<Model, AppError>{
     
     let mut resource:ActiveModel = get_one_model(db, id).await?.into();
 

@@ -1,14 +1,12 @@
 import { api } from "../services/api";
-import type { CreateBookingDto } from "../types/booking";
+import type { BookingQuery, CreateBookingDto } from "../types/booking";
 
 export const createBooking = (dto: CreateBookingDto) => 
-    api.post("/booking", dto).then(bk => bk.data)
+    api.post("/booking/", dto).then(bk => bk.data)
 
-export const getBookings = (user_id?: number) =>
+export const getBookings = (bookingQuery?: BookingQuery) =>
     api.get("/booking", {
-        params:{
-            user_id
-        }
+        params: bookingQuery
     }).then(bk => bk.data)
 
 export const getBooking = (id: number) =>
@@ -18,4 +16,4 @@ export const deletBooking = (id: number) =>
     api.delete(`/booking/${id}`)
 
 export const updateBookingStatus = (id: number, status: string) =>
-    api.patch(`/booking/${id}`, status).then(bk => bk.data)
+    api.patch(`/booking/${id}`, {status}).then(bk => bk.data)

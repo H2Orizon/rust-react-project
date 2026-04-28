@@ -1,8 +1,8 @@
 import { api } from "../services/api";
-import type { CreateResourceDto, ResourceDto} from "../types/resource";
+import type { CreateResourceDto, ResourceDto, ResourceListDto} from "../types/resource";
 
 export const getResources = (user_id?: number) => 
-    api.get<ResourceDto[]>("resources", {
+    api.get<ResourceListDto[]>("resources", {
         params:{
             user_id
         }

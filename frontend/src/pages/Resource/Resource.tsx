@@ -54,6 +54,14 @@ export default function Resource() {
                     <span>Price: {resource.price}$</span>
                     <span>Capacity: {resource.capacity}</span>
                     <span>Category: {resource.category}</span>
+                    {resource.availble_now > 0 ? (
+                        <p>Available: {resource.availble_now}</p>
+                    ) : (
+                        <p>
+                            Fully booked.
+                            Available again at: {new Date(resource.next_available_at).toLocaleString()}
+                        </p>
+                    )}
                 </div>
 
                 <p className="page-description">
@@ -73,7 +81,7 @@ export default function Resource() {
             </div>
 
         </div>
-        <BookingForm />
+        <BookingForm resorsId={Number(id)}/>
     </div>
     )
 

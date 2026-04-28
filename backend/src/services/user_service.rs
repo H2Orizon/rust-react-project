@@ -1,10 +1,10 @@
 use std::env;
 
 use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_hash::{ SaltString, rand_core::OsRng}};
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::jws::create_token, enums::user_role::UserRole, models::user_model::{ActiveModel, Column, CreateUser, Entity, LoginUserForm, UserDto}};
+use crate::{auth::jws::create_token, enums::{app_error::AppError, user_role::UserRole}, models::user_model::{ActiveModel, Column, CreateUser, Entity, LoginUserForm, UserDto}};
 
 fn verify_password(password: &str, hash: &str) -> bool{
     let arogn = Argon2::default();
@@ -15,21 +15,21 @@ fn verify_password(password: &str, hash: &str) -> bool{
     }
 }
 
-pub async fn create_user(db: &DatabaseConnection, dto: CreateUser) -> Result<UserDto, sea_orm::DbErr>{
+pub async fn create_user(db: &DatabaseConnection, dto: CreateUser) -> Result<UserDto, AppError>{
     dto.validate().map_err(|e| {
         println!("{e}");
-        sea_orm::DbErr::Custom(e.to_string())
+        AppError::Validation(e.to_string())
     })?;
     
     if dto.password != dto.password_conf{
-        return Err(sea_orm::DbErr::Custom("Passwords Do Not Match".to_string()));
+        return Err(AppError::PasswordsDontMatch());
     }
 
     let salt = SaltString::generate(&mut OsRng);
     let argon = Argon2::default();
     let password_hash = 
     argon.hash_password(dto.password.as_bytes(), &salt)
-    .map_err(|e|  sea_orm::DbErr::Custom(e.to_string()))?
+    .map_err(|e|  AppError::Validation(e.to_string()))?
     .to_string();
     let mut role= UserRole::User;
 
@@ -54,29 +54,29 @@ pub async fn create_user(db: &DatabaseConnection, dto: CreateUser) -> Result<Use
             phone: user.phone,
             city: user.city,
             role: user.role,
-            created_at: user.created_at.date(),
+            created_at: user.created_at.and_utc(),
             is_active: user.is_active
         })
 
 }
 
-pub async fn login(db: &DatabaseConnection, form:LoginUserForm) -> Result<String, DbErr>{
+pub async fn login(db: &DatabaseConnection, form:LoginUserForm) -> Result<String, AppError>{
     let user = Entity::find().filter(Column::Email.eq(form.email))
     .one(db).await?
-    .ok_or(sea_orm::DbErr::Custom("Invalid credentials".into()))?;
+    .ok_or(AppError::InvalidCredentials())?;
 
     if !verify_password(&form.password, &user.password){
-        Err(sea_orm::DbErr::Custom("Invalid credentials".into()))?;
+        Err(AppError::InvalidCredentials())?;
     }
     let token = create_token(user.id, &env::var("SECRET_KEY").unwrap(), user.role);
     Ok(token)
 
 }
 
-pub async fn get_user(db: &DatabaseConnection, id: i32) -> Result<UserDto, sea_orm::DbErr>{
+pub async fn get_user(db: &DatabaseConnection, id: i32) -> Result<UserDto, AppError>{
     let user = Entity::find_by_id(id)
     .one(db).await?
-    .ok_or(sea_orm::DbErr::Custom("User don't exist".into()))?;
+    .ok_or(AppError::UserDontExist())?;
 
     Ok(UserDto { 
         id: user.id,
@@ -85,7 +85,7 @@ pub async fn get_user(db: &DatabaseConnection, id: i32) -> Result<UserDto, sea_o
         phone: user.phone,
         city: user.city,
         role: user.role,
-        created_at: user.created_at.date(),
+        created_at: user.created_at.and_utc(),
         is_active: user.is_active
     })
 

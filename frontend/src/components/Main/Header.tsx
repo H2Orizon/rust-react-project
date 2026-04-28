@@ -12,8 +12,8 @@ export default function Header() {
             show: !!user
         },
         {
-            label: "Create Category",
-            to: "/resources/create",
+            label: "Admin panel",
+            to: "/admin",
             show: !!user
         },
         {

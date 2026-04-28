@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ResourceDto } from "../../types/resource";
+import type { ResourceListDto } from "../../types/resource";
 import ResourceCard from "../Resource/ResourceCard";
 import { getResources } from "../../api/resources";
 
@@ -9,7 +9,7 @@ type Props = {
 
 export default function UserResources({userId}: Props) {
 
-    const [userResources, setUserResorces] = useState<ResourceDto[]>([])
+    const [userResources, setUserResorces] = useState<ResourceListDto[]>([])
 
     useEffect(() => {
         if (!userId) return

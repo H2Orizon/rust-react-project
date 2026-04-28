@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router"
-import type { ResourceDto } from "../../types/resource"
+import type { ResourceListDto } from "../../types/resource"
 
 type Props = {
-    resource: ResourceDto
+    resource: ResourceListDto
 }
 
 export default function ResourceCard({resource}: Props) {
@@ -22,10 +22,6 @@ export default function ResourceCard({resource}: Props) {
             <div className="resource-card-content">
                 <h3>{resource.name}</h3>
 
-                <p className="resource-card-description">
-                    {resource.description}
-                </p>
-
                 <div className="resource-card-meta">
                     <span>{resource.price}$</span>
                     <span>{resource.capacity} Capacity</span>
@@ -34,6 +30,7 @@ export default function ResourceCard({resource}: Props) {
                 <div className="resource-card-footer">
                     <span>{resource.category}</span>
                     <span>{resource.location || "N/A"}</span>
+                    <span>{resource.availble_now} availble now</span>
                 </div>
 
             </div>

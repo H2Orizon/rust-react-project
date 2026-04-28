@@ -5,15 +5,18 @@ import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { createBooking } from "../../api/bookings"
 import { useAuth } from "../../context/AuthContext"
-import { useParams } from "react-router"
 
-export default function BookingForm(){
+type Props={
+    resorsId:number
+}
 
-    const {resource_id} = useParams()
+export default function BookingForm({resorsId}: Props){
+
     const {user} = useAuth()
+    console.error(resorsId)
 
     const [form, setForm] = useState<CreateBookingDto>({
-        resource_id: Number(resource_id),
+        resource_id: Number(resorsId),
         user_id: Number(user?.id),
         location: "",
         quantity: 0,

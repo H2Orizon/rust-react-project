@@ -2,7 +2,7 @@ use sea_orm::{DeriveActiveEnum, EnumIter};
 use serde::{Deserialize, Serialize};
 
 
-#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize, FromFormField)]
 #[sea_orm(rs_type = "String", db_type = "Text")]
 #[serde(rename_all = "lowercase")]
 pub enum BookingStatus{

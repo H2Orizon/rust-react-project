@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route} from "react-router-dom"
+import { Routes, Route} from "react-router-dom"
 import Resources from "./pages/Resource/Resources"
 import Resource from "./pages/Resource/Resource"
 import CreateResource from "./pages/Resource/CreateResource"
@@ -10,7 +10,6 @@ import UserProfile from "./pages/User/User"
 
 function App() {
   return (
-   <BrowserRouter>
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Resources />}/>
@@ -23,7 +22,6 @@ function App() {
       <Route path="/auth/register" element={<Register />}/>
       <Route path="/auth/login" element={<Login />}/>
     </Routes>
-  </BrowserRouter>
   )
 }
 

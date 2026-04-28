@@ -1,7 +1,7 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use chrono::{NaiveDateTime, NaiveDate};
+use chrono::{Utc, DateTime, NaiveDateTime};
 
 use crate::{enums::user_role::UserRole, models::booking_model};
 use crate::validators::password_validator::validator_password;
@@ -30,7 +30,7 @@ pub struct UserDto{
     pub phone: Option<String>,
     pub city: Option<String>,
     pub role: UserRole,
-    pub created_at: NaiveDate,
+    pub created_at: DateTime<Utc>,
     pub is_active: bool
 }
 

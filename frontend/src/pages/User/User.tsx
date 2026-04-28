@@ -3,6 +3,8 @@ import type { UserDto } from "../../types/users"
 import { useParams } from "react-router"
 import { getProfile } from "../../api/users"
 import UserResources from "../../components/User/UsersResources"
+import UserBooking from "../../components/User/UsersBooking"
+import UserBookingAprove from "../../components/User/UsersBookingAprove"
 
 export default function UserProfile(){
 
@@ -44,7 +46,10 @@ export default function UserProfile(){
                     <UserResources userId={Number(id)}/>
                 </div>
                 <div>
-                    <UserResources userId={Number(id)}/>
+                    <UserBooking userId={Number(id)}/>
+                </div>
+                <div>
+                    <UserBookingAprove userId={Number(id)}/>
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react"
 import { decodeToken } from "../utiles/jwt"
+import { useNavigate } from "react-router-dom"
 
 type User = {
     id: number
@@ -17,6 +18,9 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({children}: {children: ReactNode}) {
+    
+    const navigator = useNavigate()
+
     const [token, setToken] = useState<string | null>(
         localStorage.getItem("token")
     )
@@ -39,6 +43,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
         localStorage.removeItem("token")
         setToken(null)
         setUser(null)
+        navigator("/")
     }
 
     const [user, setUser] = useState<User | null>(() =>{
