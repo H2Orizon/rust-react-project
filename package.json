@@ -6,6 +6,7 @@
     "dev":  "concurrently \"npm run backend\" \"npm run frontend\"",
     "backend": "cd backend && cargo run",
     "frontend": "cd frontend && npm run dev",
+    "mobile": "cd mobile && npm start",
     "migration-refresh": "cd backend/database/migration && cargo run -- fresh"
   }
 }
