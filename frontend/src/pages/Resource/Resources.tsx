@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import type { ResourceDto } from "../../types/resource";
-import { getResources } from "../../api/resources";
 import ResourceCard from "../../components/Resource/ResourceCard";
 import { Link } from "react-router-dom";
+import type { ResourceListDto } from "../../../../shared/types/resource";
+import { getResources } from "../../api/resources";
 
 export default function Resources() {
-    const [resources, setResources] = useState<ResourceDto[]>([])
+    const [resources, setResources] = useState<ResourceListDto[]>([])
 
     useEffect(() =>{
         getResources().then(setResources)

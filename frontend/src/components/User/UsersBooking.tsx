@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { BookingStatus, type BookingDto, type BookingQuery } from "../../types/booking";
-import { getBookings } from "../../api/bookings";
 import BookingCard from "../Booking/BookingCard";
+import { BookingStatus, type BookingDto, type BookingQuery } from "../../../../shared/types/booking";
+import { getBookings } from "../../api/bookings";
 
 type Props = {
     userId: number

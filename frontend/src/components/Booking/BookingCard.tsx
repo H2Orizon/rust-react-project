@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router"
-import { BookingStatus, type BookingDto } from "../../types/booking"
-import { updateBookingStatus } from "../../api/bookings"
 import { useAuth } from "../../context/AuthContext"
+import { BookingStatus, type BookingDto } from "../../../../shared/types/booking"
+import { updateBookingStatus } from "../../api/bookings"
 
 type Props = {
     booking: BookingDto

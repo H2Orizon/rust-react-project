@@ -1,4 +1,4 @@
-export type ResgisterUser = {
+export type ResgisterUserDto = {
     username: string
     email: string
     phone?: string
@@ -7,7 +7,7 @@ export type ResgisterUser = {
     password_conf: string
 }
 
-export type UserLogin = {
+export type UserLoginDto = {
     email: string
     password: string
 }

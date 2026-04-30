@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import type { UserDto } from "../../types/users"
 import { useParams } from "react-router"
-import { getProfile } from "../../api/users"
 import UserResources from "../../components/User/UsersResources"
 import UserBooking from "../../components/User/UsersBooking"
 import UserBookingAprove from "../../components/User/UsersBookingAprove"
+import { getProfile } from "../../api/users"
+import type { UserDto } from "../../../../shared/types/users"
 
 export default function UserProfile(){
 

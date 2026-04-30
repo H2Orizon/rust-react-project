@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import type { ResourceDto } from "../../types/resource";
-import { deleteResourceApi, getResource } from "../../api/resources";
 import { useAuth } from "../../context/AuthContext";
 import BookingForm from "../../components/Booking/BookingForm";
+import type { ResourceDto } from "../../../../shared/types/resource";
+import { getResource } from "../../api/resources";
 
 export default function Resource() {
 
@@ -27,7 +27,7 @@ export default function Resource() {
     const deleteResource = async (id: number) => {
         try {
             setError(null)
-            await deleteResourceApi(id)
+            await deleteResource(id)
             navigator("/")
         }catch(error){
             setError("Failed to delete resource")

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import type { ResourceListDto } from "../../types/resource";
 import ResourceCard from "../Resource/ResourceCard";
 import { getResources } from "../../api/resources";
+import type { ResourceListDto } from "../../../../shared/types/resource";
 
 type Props = {
     userId: number

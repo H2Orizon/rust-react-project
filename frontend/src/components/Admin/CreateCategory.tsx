@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import type { CreateCategory } from "../../types/category";
+import type { CreateCategoryDto } from "../../../../shared/types/category";
 import { createCategory } from "../../api/categories";
-
 export default function CreateCategory() {
 
     const [error, setError] = useState<string | null>(null)
 
-    const [form, setForm] = useState<CreateCategory>({
+    const [form, setForm] = useState<CreateCategoryDto>({
         name: "",
         description: ""
     })

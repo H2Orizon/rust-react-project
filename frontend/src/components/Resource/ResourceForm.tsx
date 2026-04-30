@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import type { CreateResourceDto } from "../../types/resource";
+import type { CreateResourceDto } from "../../../../shared/types/resource";
 import { createResource } from "../../api/resources";
-import type { CategoryDto } from "../../types/category";
+import type { CategoryDto } from "../../../../shared/types/category";
 import { getCategories } from "../../api/categories";
 
 export default function ResourceForm(){

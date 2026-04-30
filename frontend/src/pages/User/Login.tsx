@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import type { UserLogin } from "../../types/users";
-import { loginUser } from "../../api/users";
 import { useAuth } from "../../context/AuthContext";
+import type { UserLoginDto } from "../../../../shared/types/users";
+import { loginUser } from "../../api/users";
 
 export default function Login() {
     const navigate = useNavigate()
@@ -10,7 +10,7 @@ export default function Login() {
 
     const [error, setError] = useState<string | null>(null)
 
-    const [form, setForm] = useState<UserLogin>({
+    const [form, setForm] = useState<UserLoginDto>({
         email: "",
         password: ""
     })

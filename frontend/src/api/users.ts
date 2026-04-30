@@ -1,11 +1,11 @@
-import { api } from "../services/api";
-import type { ResgisterUser, UserDto, UserLogin } from "../types/users";
+import { userService } from "../../../shared/api/users"
+import { api } from "../services/api"
 
-export const registerUser = async (dto: ResgisterUser) => 
-    api.post<ResgisterUser>("/user/register", dto).then(res => res.data)
+export const registerUser = (dto: any) => 
+    userService.register(api, dto).then(res => res.data)
 
-export const loginUser = async (dto: UserLogin) => 
-    api.post<string>("/user/login", dto).then(res => res.data)
+export const loginUser = (dto: any) => 
+    userService.login(api, dto).then(res => res.data)
 
-export const getProfile = async (id:number) =>
-    api.get<UserDto>(`/user/${id}`).then(res => res.data)
+export const getProfile = (id:number) =>
+    userService.getProfile(api, id).then(res => res.data)

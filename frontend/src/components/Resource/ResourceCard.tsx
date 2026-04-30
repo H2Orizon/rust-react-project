@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router"
-import type { ResourceListDto } from "../../types/resource"
+import type { ResourceListDto } from "../../../../shared/types/resource"
 
 type Props = {
     resource: ResourceListDto

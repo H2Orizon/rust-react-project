@@ -1,18 +1,14 @@
-import { api } from "../services/api";
-import type { CreateResourceDto, ResourceDto, ResourceListDto} from "../types/resource";
+import { resourceService } from "../../../shared/api/resources"
+import { api } from "../services/api"
 
 export const getResources = (user_id?: number) => 
-    api.get<ResourceListDto[]>("resources", {
-        params:{
-            user_id
-        }
-    }).then(res => res.data)
+    resourceService.getAll(api, user_id).then(res => res.data)
 
 export const getResource = (id: number) =>
-    api.get<ResourceDto>(`/resources/${id}`).then(res => res.data)
+    resourceService.getOne(api, id).then(res => res.data)
 
-export const createResource = (dto: CreateResourceDto) =>
-    api.post<ResourceDto>("/resources", dto).then(res => res.data)
+export const createResource = (dto: any) =>
+    resourceService.create(api, dto).then(res => res.data)
 
-export const deleteResourceApi = (id: number) =>
-    api.delete(`/resources/${id}`)
+export const deleteResource = (id: number) =>
+    resourceService.delete(api, id)

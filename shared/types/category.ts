@@ -4,7 +4,7 @@ export type CategoryDto = {
     description: string
 }
 
-export type CreateCategory = {
+export type CreateCategoryDto = {
     name: string
     description: string
 }

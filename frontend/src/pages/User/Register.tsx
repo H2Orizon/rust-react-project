@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import type { ResgisterUser } from "../../types/users";
+import type { ResgisterUserDto } from "../../../../shared/types/users";
 import { registerUser } from "../../api/users";
 
 export default function Register(){
@@ -10,7 +10,7 @@ export default function Register(){
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const [form, setForm] = useState<ResgisterUser>({
+    const [form, setForm] = useState<ResgisterUserDto>({
         username: "",
         email: "",
         phone: "",
