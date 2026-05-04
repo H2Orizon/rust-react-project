@@ -1,13 +1,9 @@
 import type { AxiosInstance } from "axios";
-import type { CreateResourceDto, ResourceDto, ResourceListDto,} from "../types/resource";
+import type { CreateResourceDto, ResourceDto, ResourceListDto, ResourceQuery,} from "../types/resource";
 
 export const resourceService = {
-    getAll: (api: AxiosInstance, query?: number) => 
-        api.get<ResourceListDto[]>("/resources/", {
-            params: {
-                query
-            }
-        }),
+    getAll: (api: AxiosInstance, query?: ResourceQuery) => 
+        api.get<ResourceListDto[]>("/resources/", {params: query }),
     getOne: (api: AxiosInstance, id: number) =>
         api.get<ResourceDto>(`/resources/${id}`),
 

@@ -1,7 +1,7 @@
 use rocket::{State, http::Status, serde::json::Json};
 use sea_orm::DatabaseConnection;
 
-use crate::{auth::guard::AuthUser, models::booking_model::{BookingDto, UpdateStatus, BookingQuery, CreateBooking, Model}, services::booking_service};
+use crate::{auth::guard::AuthUser, models::booking_model::{BookingDto, BookingQuery, CreateBooking, Model, UpdateStatus}, services::booking_service};
 
 #[get("/?<query..>")]
 pub async fn get_all_booking(db: &State<DatabaseConnection>, query: BookingQuery) -> Result<Json<Vec<BookingDto>>, Status>{
@@ -35,6 +35,8 @@ pub async fn create_booking(db: &State<DatabaseConnection>, dto: Json<CreateBook
 pub async fn update_status(db: &State<DatabaseConnection>, resource_id: i32, status: Json<UpdateStatus>) -> Status{
     match booking_service::update_status(db, resource_id, status.into_inner().status).await {
         Ok(_) => Status::Ok,
-        Err(_) => Status::InternalServerError
+        Err(_) => {
+            Status::InternalServerError
+        }
     }
 }

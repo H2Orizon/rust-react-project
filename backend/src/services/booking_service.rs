@@ -2,7 +2,7 @@ use chrono::{ DateTime, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
 use validator::Validate;
 
-use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model}, resource_model, user_model}, services::resources_service};
+use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model}, resource_model, user_model}, services::{resources_service, user_service}, utility};
 
 async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32,dto: &CreateBooking) -> Result<i32, AppError> {
 
@@ -34,6 +34,7 @@ async fn get_one_model(db: &DatabaseConnection,id: i32) -> Result<Model, AppErro
     Ok(booking)
 }
 
+//add enail massage
 pub async fn auto_upadate_status(db: &DatabaseConnection){
     let now = Utc::now().naive_utc();
 
@@ -75,10 +76,10 @@ pub async fn get_next_availeble(db: &DatabaseConnection, resource_id: i32) -> Re
         .select_only()
         .column_as(Column::EndDate, "next_available_at")
         .order_by_asc(Column::EndDate)
-        .into_tuple()
+        .into_tuple::<DateTime<Utc>>()
         .one(db)
         .await?;
-    print!("{:?}",Utc::now().naive_utc());
+    print!("next_available: {:?}",next_available);
     Ok(next_available)
 }
 
@@ -186,6 +187,17 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         status: Set(BookingStatus::Pending),
         ..Default::default()
     };
+
+    let user_email = &user_service::get_user(db, dto.user_id).await?.email;
+    
+    let booker_id = resources_service::get_one(db, dto.resource_id).await?.user_id;
+
+    let booker_email = &user_service::get_user(db, booker_id).await?.email;
+   match utility::email_sender::send_email
+    (booker_email, user_email, "New Booking" , "new booking").await{
+        Ok(_) => println!(""),
+        Err(e) => eprint!("{e}")
+    }
 
     Ok(new_booking.insert(db).await?)
 }

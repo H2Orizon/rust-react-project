@@ -13,6 +13,7 @@ mod enums;
 mod validators;
 mod auth;
 mod cors;
+mod utility;
 
 
 #[launch]

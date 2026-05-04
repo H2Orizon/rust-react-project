@@ -3,7 +3,9 @@
     "concurrently": "^9.2.1"
   },
   "scripts": {
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev:web": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "dev:mob":"concurrently \"npm run backend\" \"npm run mobile\"",
+    "dev:all":"concurrently \"npm run backend\" \"npm run frontend\" \"npm run mobile\"",
     "backend": "cd backend && cargo run",
     "frontend": "cd frontend && npm run dev",
     "mobile": "cd mobile && npm start",

@@ -16,5 +16,5 @@ export const bookingService = {
         api.delete(`/booking/${id}`),
 
     updateStatus: (api: AxiosInstance, id: number, status: BookingStatus) =>
-        api.patch(`/booking/${id}`, status)
+        api.patch(`/booking/${id}`, { status })
 }

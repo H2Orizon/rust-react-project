@@ -1,9 +1,8 @@
 import { resourceService } from "../../../shared/api/resources"
-import type { ResourceQuery } from "../../../shared/types/resource"
 import { api } from "../services/api"
 
-export const getResources = (query?: ResourceQuery) => 
-    resourceService.getAll(api, query).then(res => res.data)
+export const getResources = (user_id?: number) => 
+    resourceService.getAll(api, user_id).then(res => res.data)
 
 export const getResource = (id: number) =>
     resourceService.getOne(api, id).then(res => res.data)

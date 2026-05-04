@@ -29,3 +29,7 @@ export type CreateResourceDto = {
     location?: string
     category_id: number
 }
+
+export type ResourceQuery = {
+    user_id: number
+}

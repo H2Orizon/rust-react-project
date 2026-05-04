@@ -45,11 +45,17 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
 pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, AppError>{
     let resource = get_one_model(db, id).await?;
     println!("MODEL: {:?}", resource);
-    let category_name = resource.find_related(CategoriesEntity).one(db).await?
-    .unwrap().name;
+    let category = resource.find_related(CategoriesEntity).one(db).await?;
+
+    let category_name = category.map(|c| c.name).unwrap_or("Unknown".to_string());
+
     let username = resource.find_related(UserEntity).one(db).await?.unwrap().username;
 
     let booked = booking_service::get_resource_booked(db, resource.id).await?;
+
+    let next_available_at = booking_service::get_next_availeble(db, resource.id).await.unwrap_or(None);
+
+    println!("Hi i have {:?}",next_available_at);
 
     Ok(
         ResourceDto { 
@@ -60,7 +66,7 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
         location: resource.location,
         capacity: resource.capacity,
         availble_now: resource.capacity - booked,
-        next_available_at: booking_service::get_next_availeble(db, resource.id).await?,
+        next_available_at: next_available_at,
         category: category_name,
         username: username,
         user_id: resource.user_id

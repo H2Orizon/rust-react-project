@@ -4,7 +4,7 @@ use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier, password_ha
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::jws::create_token, enums::{app_error::AppError, user_role::UserRole}, models::user_model::{ActiveModel, Column, CreateUser, Entity, LoginUserForm, UserDto}};
+use crate::{auth::jws::create_token, enums::{app_error::AppError, user_role::UserRole}, models::user_model::{ActiveModel, Column, CreateUser, Entity, LoginUserForm, Model, UserDto}};
 
 fn verify_password(password: &str, hash: &str) -> bool{
     let arogn = Argon2::default();
@@ -74,9 +74,7 @@ pub async fn login(db: &DatabaseConnection, form:LoginUserForm) -> Result<String
 }
 
 pub async fn get_user(db: &DatabaseConnection, id: i32) -> Result<UserDto, AppError>{
-    let user = Entity::find_by_id(id)
-    .one(db).await?
-    .ok_or(AppError::UserDontExist())?;
+    let user = get_user_model(db, id).await?;
 
     Ok(UserDto { 
         id: user.id,
@@ -89,4 +87,12 @@ pub async fn get_user(db: &DatabaseConnection, id: i32) -> Result<UserDto, AppEr
         is_active: user.is_active
     })
 
+}
+
+async fn get_user_model(db: &DatabaseConnection, id: i32) -> Result<Model, AppError> {
+    let user = Entity::find_by_id(id)
+    .one(db).await?
+    .ok_or(AppError::UserDontExist())?;
+
+    Ok(user)
 }

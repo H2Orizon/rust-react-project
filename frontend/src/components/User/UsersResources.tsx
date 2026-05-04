@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ResourceCard from "../Resource/ResourceCard";
 import { getResources } from "../../api/resources";
-import type { ResourceListDto } from "../../../../shared/types/resource";
+import type { ResourceListDto, ResourceQuery } from "../../../../shared/types/resource";
 
 type Props = {
     userId: number
@@ -10,11 +10,14 @@ type Props = {
 export default function UserResources({userId}: Props) {
 
     const [userResources, setUserResorces] = useState<ResourceListDto[]>([])
+    const [resourceQuery] = useState<ResourceQuery>({
+        user_id: userId
+    })
 
     useEffect(() => {
         if (!userId) return
 
-        getResources(Number(userId)).then(setUserResorces)
+        getResources(resourceQuery).then(setUserResorces)
     }, [userId])
     
     return(
