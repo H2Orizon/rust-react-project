@@ -507,3 +507,11 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ============================= */
+/* Slider */
+/* ============================= */
+
+.range-slider {
+    width: 300px;
+}

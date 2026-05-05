@@ -1,7 +1,7 @@
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::Entity as CategoriesEntity, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
+use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::{self, Entity as CategoriesEntity}, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
 
 
 pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{
@@ -20,6 +20,22 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
         query = query.filter(Column::UserId.eq(user_id))
     }
     
+    if let Some(category) = query_param.category{
+        query = query.filter(category_model::Column::Id.eq(category));
+    }
+
+    if let Some(resource_name) = query_param.resource_name{
+        query = query.filter(Column::Name.contains(resource_name))
+    }
+
+    if let Some(min_price) = query_param.min_price{
+        query = query.filter(Column::Price.gte(min_price))
+    }
+
+    if let Some(max_price) = query_param.max_price{
+        query = query.filter(Column::Price.lte(max_price))
+    }
+
     let resources = query.all(db).await?;
 
     let mut resources_dtos = Vec::new();

@@ -31,5 +31,9 @@ export type CreateResourceDto = {
 }
 
 export type ResourceQuery = {
-    user_id: number
+    user_id?: number
+    resource_name?: string
+    category?: number
+    min_price?: number
+    max_price?: number
 }

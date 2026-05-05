@@ -69,7 +69,11 @@ pub struct CreateResource{
 
 #[derive(FromForm, Debug)]
 pub struct ResourceQuery{
-    pub user_id: Option<i32>
+    pub user_id: Option<i32>,
+    pub resource_name: Option<String>,
+    pub category: Option<i32>,
+    pub min_price: Option<i32>,
+    pub max_price: Option<i32>
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]
@@ -80,6 +84,7 @@ pub enum Relation {
         to = "category_model::Column::Id"
     )]
     Category,
+
     #[sea_orm(
         belongs_to = "crate::models::user_model::Entity"
         from = "Column::UserId"

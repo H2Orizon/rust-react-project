@@ -65,10 +65,11 @@ pub async fn get_resource_booked(db: &DatabaseConnection, resource_id: i32) -> R
                 .filter(Column::ResourceId.eq(resource_id))
                 .filter(Column::Status.eq(BookingStatus::Approved))
                 .all(db).await?.iter().map(|b| b.quantity).sum();
-
     Ok(booked)
 }
 
+
+//need fix
 pub async fn get_next_availeble(db: &DatabaseConnection, resource_id: i32) -> Result<Option<DateTime<Utc>>, AppError>{
     let next_available = Entity::find()
         .filter(Column::ResourceId.eq(resource_id))

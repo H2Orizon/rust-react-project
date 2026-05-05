@@ -6,7 +6,7 @@ export default function Index(){
 
     return(
         <View>
-            <Text>Tesex</Text>
+            <Text>Text</Text>
         </View>
     )
 }
