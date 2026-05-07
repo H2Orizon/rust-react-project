@@ -28,6 +28,15 @@ export type CreateResourceDto = {
     capacity?: number
     location?: string
     category_id: number
+    auto_approve: boolean
+}
+
+export type PaginatedResponse = {
+    resources: ResourceListDto[]
+    total: number
+    page: number
+    per_page: number
+    total_pages: number
 }
 
 export type ResourceQuery = {
@@ -36,4 +45,6 @@ export type ResourceQuery = {
     category?: number
     min_price?: number
     max_price?: number
+    per_page?: number
+    page?: number
 }

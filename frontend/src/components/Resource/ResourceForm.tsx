@@ -24,13 +24,18 @@ export default function ResourceForm(){
         price: 0,
         capacity: 0,
         location: "",
-        category_id: 1
+        category_id: 1,
+        auto_approve: false
     })
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLInputElement>) => {
+        const {name, type, value} = e.target
+        
         setForm({
             ...form,
-            [e.target.name]: e.target.value
+            [name]: type === "checkbox"
+                ? (e.target as HTMLInputElement).checked
+                : value
         })
     }
 
@@ -128,6 +133,8 @@ export default function ResourceForm(){
                         </option>
                     ))}
                 </select>
+
+                <input type="checkbox" name="auto_approve" onChange={handleChange}/>
 
                 <button 
                     className="btn-primary"

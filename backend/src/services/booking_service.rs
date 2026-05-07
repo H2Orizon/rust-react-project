@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use chrono::{ DateTime, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
 use validator::Validate;
@@ -68,6 +70,25 @@ pub async fn get_resource_booked(db: &DatabaseConnection, resource_id: i32) -> R
     Ok(booked)
 }
 
+pub async fn get_booking_map(db: &DatabaseConnection, resource_ids: Vec<i32>) -> Result<HashMap<i32, i64>, AppError> {
+    let rows = Entity::find()
+            .select_only()
+            .column(Column::ResourceId)
+            .column_as(Column::Id.count(), "count")
+            .filter(Column::ResourceId.is_in(resource_ids.clone()))
+            .group_by(Column::ResourceId)
+            .into_tuple::<(i32,i64)>()
+            .all(db)
+            .await?;
+
+        let mut map = HashMap::new();
+        for (resource_id, count) in rows{
+            map.insert(resource_id, count);
+        }
+
+        Ok(map)
+
+}
 
 //need fix
 pub async fn get_next_availeble(db: &DatabaseConnection, resource_id: i32) -> Result<Option<DateTime<Utc>>, AppError>{
@@ -178,6 +199,12 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         return Err(AppError::ResourceNotAvailable());
     }
 
+    let is_auto_approved = resources_service::get_one(db, dto.resource_id).await?.auto_approved;
+    let mut status = BookingStatus::Pending;
+    if is_auto_approved{
+        status = BookingStatus::Approved
+    };
+
     let new_booking = ActiveModel {
         user_id: Set(dto.user_id),
         resource_id: Set(dto.resource_id),
@@ -185,7 +212,7 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         location: Set(dto.location),
         end_date: Set(dto.end_date.naive_utc()),
         quantity: Set(dto.quantity.unwrap_or(1)),
-        status: Set(BookingStatus::Pending),
+        status: Set(status),
         ..Default::default()
     };
 

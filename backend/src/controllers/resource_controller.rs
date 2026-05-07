@@ -1,10 +1,10 @@
 use rocket::{State, http::Status, serde::json::Json};
 use sea_orm::DatabaseConnection;
 
-use crate::{auth::guard::AuthUser, models::resource_model::{CreateResource, Model, ResourceListDto, ResourceDto, ResourceQuery, UpdateResource}, services::resources_service};
+use crate::{auth::guard::AuthUser, models::resource_model::{CreateResource, Model, PaginatedResponse, ResourceDto, ResourceQuery, UpdateResource}, services::resources_service};
 
 #[get("/?<query..>")]
-pub async fn get_all_resources(db: &State<DatabaseConnection>, query: ResourceQuery) -> Result<Json<Vec<ResourceListDto>>, String>{
+pub async fn get_all_resources(db: &State<DatabaseConnection>, query: ResourceQuery) -> Result<Json<PaginatedResponse>, String>{
     match resources_service::get_all(db, query).await {
         Ok(resources) => Ok(Json(resources)),
         Err(e) => Err(e.to_string())

@@ -17,7 +17,8 @@ pub struct Model{
     pub location: String,
     pub created_at: NaiveDateTime,
     pub category_id: i32,
-    pub user_id: i32
+    pub user_id: i32,
+    pub auto_approved: bool
 }
 
 #[derive(Serialize)]
@@ -32,10 +33,11 @@ pub struct ResourceDto{
     pub location: String,
     pub category: String,
     pub username: String,
-    pub user_id: i32
+    pub user_id: i32,
+    pub auto_approved: bool
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ResourceListDto{
     pub id: i32,
     pub name: String,
@@ -53,7 +55,8 @@ pub struct UpdateResource{
     pub price: Option<f32>,
     pub category_id: Option<i32>,
     pub capacity: Option<i32>,
-    pub location: Option<String>
+    pub location: Option<String>,
+    pub auto_approve: Option<bool>
 }
 
 #[derive(FromForm, Debug, Deserialize, Serialize, Validate)]
@@ -64,7 +67,8 @@ pub struct CreateResource{
     pub price: f32,
     pub capacity: Option<i32>,
     pub location: String,
-    pub category_id: i32
+    pub category_id: i32,
+    pub auto_approve: bool
 }
 
 #[derive(FromForm, Debug)]
@@ -73,7 +77,18 @@ pub struct ResourceQuery{
     pub resource_name: Option<String>,
     pub category: Option<i32>,
     pub min_price: Option<i32>,
-    pub max_price: Option<i32>
+    pub max_price: Option<i32>,
+    pub per_page: Option<u64>,
+    pub page: Option<u64>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaginatedResponse{
+    pub resources: Vec<ResourceListDto>,
+    pub total: u64,
+    pub page: u64,
+    pub per_page: u64,
+    pub total_pages: u64,
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]

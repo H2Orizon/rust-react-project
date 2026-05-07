@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import BookingForm from "../../components/Booking/BookingForm";
 import type { ResourceDto } from "../../../../shared/types/resource";
-import { getResource } from "../../api/resources";
+import { deleteResource, getResource } from "../../api/resources";
 
 export default function Resource() {
 
@@ -24,7 +24,7 @@ export default function Resource() {
         return <div>Loading...</div>
     }
 
-    const deleteResource = async (id: number) => {
+    const delete_resource = async (id: number) => {
         try {
             setError(null)
             await deleteResource(id)
@@ -71,7 +71,7 @@ export default function Resource() {
                 { user?.id === resource.user_id && (
                     <button
                         className="btn-danger"
-                        onClick={() => deleteResource(resource.id)}
+                        onClick={() => delete_resource(resource.id)}
                     >
                         Delete
                     </button>
