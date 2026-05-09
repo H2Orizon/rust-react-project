@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import type { ResgisterUserDto } from "../../../../shared/types/users";
-import { registerUser } from "../../api/users";
+import type { ResgisterUserDto } from "@shared/types/users";
+import { registerUser } from "@api/users";
 
 export default function Register(){
 

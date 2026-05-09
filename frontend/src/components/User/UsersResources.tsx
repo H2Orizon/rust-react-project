@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ResourceCard from "../Resource/ResourceCard";
-import { getResources } from "../../api/resources";
-import type { ResourceListDto, ResourceQuery } from "../../../../shared/types/resource";
+import { getResources } from "@api/resources";
+import type { PaginatedResponse, ResourceQuery } from "@shared/types/resource";
 
 type Props = {
     userId: number
@@ -9,10 +9,12 @@ type Props = {
 
 export default function UserResources({userId}: Props) {
 
-    const [userResources, setUserResorces] = useState<ResourceListDto[]>([])
+    const [userResources, setUserResorces] = useState<PaginatedResponse>()
     const [resourceQuery] = useState<ResourceQuery>({
         user_id: userId
     })
+
+    const resources = userResources?.resources || []
 
     useEffect(() => {
         if (!userId) return
@@ -23,7 +25,7 @@ export default function UserResources({userId}: Props) {
     return(
         <div>
             <h2>User Resources</h2>
-            {Array.isArray(userResources) && userResources.map(r =>
+            {Array.isArray(resources) && resources.map(r =>
                 <ResourceCard key={r.id} resource={r}/>
             )}
         </div>

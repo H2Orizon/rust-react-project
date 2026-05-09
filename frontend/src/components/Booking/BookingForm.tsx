@@ -3,8 +3,8 @@ import dayjs, { Dayjs } from "dayjs"
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { useAuth } from "../../context/AuthContext"
-import type { CreateBookingDto } from "../../../../shared/types/booking"
-import { createBooking } from "../../api/bookings"
+import type { CreateBookingDto } from "@shared/types/booking"
+import { createBooking } from "@api/bookings"
 
 type Props={
     resorsId:number

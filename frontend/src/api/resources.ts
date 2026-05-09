@@ -1,5 +1,5 @@
-import { resourceService } from "../../../shared/api/resources"
-import type { ResourceQuery } from "../../../shared/types/resource"
+import { resourceService } from "@shared/api/resources"
+import type { ResourceQuery } from "@shared/types/resource"
 import { api } from "../services/api"
 
 export const getResources = (query?: ResourceQuery) => 

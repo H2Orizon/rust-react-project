@@ -1,4 +1,4 @@
-import { userService } from "../../../shared/api/users"
+import { userService } from "@shared/api/users"
 import { api } from "../services/api"
 
 export const registerUser = (dto: any) => 

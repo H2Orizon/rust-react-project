@@ -1,5 +1,5 @@
-import { bookingService } from "../../../shared/api/bookings"
-import type { BookingQuery, BookingStatus, CreateBookingDto } from "../../../shared/types/booking"
+import { bookingService } from "@shared/api/bookings"
+import type { BookingQuery, BookingStatus, CreateBookingDto } from "@shared/types/booking"
 import { api } from "../services/api"
 
 export const getBookings = (query?: BookingQuery) =>

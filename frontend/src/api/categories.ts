@@ -1,5 +1,5 @@
-import { categoryService } from "../../../shared/api/categories"
-import type { CreateCategoryDto } from "../../../shared/types/category"
+import { categoryService } from "@shared/api/categories"
+import type { CreateCategoryDto } from "@shared/types/category"
 import { api } from "../services/api"
 
 export const getCategories = () =>

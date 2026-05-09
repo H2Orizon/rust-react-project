@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
-import type { UserLoginDto } from "../../../../shared/types/users";
-import { loginUser } from "../../api/users";
+import type { UserLoginDto } from "@shared/types/users";
+import { loginUser } from "@api/users";
 
 export default function Login() {
     const navigate = useNavigate()

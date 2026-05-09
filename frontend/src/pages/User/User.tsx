@@ -3,8 +3,8 @@ import { useParams } from "react-router"
 import UserResources from "../../components/User/UsersResources"
 import UserBooking from "../../components/User/UsersBooking"
 import UserBookingAprove from "../../components/User/UsersBookingAprove"
-import { getProfile } from "../../api/users"
-import type { UserDto } from "../../../../shared/types/users"
+import { getProfile } from "@/api/users"
+import type { UserDto } from "@shared/types/users"
 
 export default function UserProfile(){
 

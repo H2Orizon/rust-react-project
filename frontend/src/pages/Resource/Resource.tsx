@@ -2,22 +2,22 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import BookingForm from "../../components/Booking/BookingForm";
-import type { ResourceDto } from "../../../../shared/types/resource";
-import { deleteResource, getResource } from "../../api/resources";
+import type { ResourceDto } from "@shared/types/resource";
+import { deleteResource, getResource } from "@api/resources";
 
 export default function Resource() {
 
     const { user } = useAuth()
     const { id } = useParams()
 
-    const [resource, setResources] = useState<ResourceDto>()
+    const [resource, setResource] = useState<ResourceDto>()
     const [error, setError] = useState<string | null>(null)
     const navigator = useNavigate()
 
     useEffect(() =>{
         if (!id) return
 
-        getResource(Number(id)).then(setResources)
+        getResource(Number(id)).then(setResource)
     }, [id])
 
     if (!resource){

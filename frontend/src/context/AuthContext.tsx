@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react"
-import { decodeToken } from "../../../shared/utile/jtw"
+import { decodeToken } from "@shared/utile/jwt"
 import { useNavigate } from "react-router-dom"
 
 type User = {

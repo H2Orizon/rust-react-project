@@ -1,10 +1,15 @@
-import { AuthProvider } from "@/src/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { Slot } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "./Header";
 
 export default function Layout(){
     return(
         <AuthProvider>
-            <Slot />
+            <SafeAreaView style={{flex:1}}>
+                <Header />
+                <Slot />
+            </SafeAreaView>
         </AuthProvider>
     )
 }

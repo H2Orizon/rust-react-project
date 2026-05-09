@@ -18,7 +18,7 @@ export default function Header() {
         },
         {
             label: "Profile",
-            to: `profile/${user?.id}`,
+            to: `/profile/${user?.id}`,
             show: !!user
         }
     ]
@@ -33,7 +33,7 @@ export default function Header() {
                 
                 <nav className="nav" >
                     {menu
-                        .filter(iten => iten.show)
+                        .filter(item => item.show)
                         .map(item => (
                             <Link key={item.to} to={item.to}>{item.label}</Link>
                         ))

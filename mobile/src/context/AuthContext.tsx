@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 import * as SecureStore from "expo-secure-store"
-import {decodeToken} from "../../../shared/utile/jtw"
+import { decodeToken } from "@shared/utile/jwt"
 
 type User = {
     id: number

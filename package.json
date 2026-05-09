@@ -4,11 +4,11 @@
   },
   "scripts": {
     "dev:web": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "dev:mob":"concurrently \"npm run backend\" \"npm run mobile\"",
-    "dev:all":"concurrently \"npm run backend\" \"npm run frontend\" \"npm run mobile\"",
+    "dev:mob": "concurrently \"npm run backend\" \"npm run mobile\"",
+    "dev:all": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run mobile\"",
     "backend": "cd backend && cargo run",
     "frontend": "cd frontend && npm run dev",
-    "mobile": "cd mobile && npm start",
+    "mobile": "cd mobile && npx expo start",
     "migration-refresh": "cd backend/database/migration && cargo run -- fresh"
   },
   "dependencies": {
@@ -16,7 +16,6 @@
   },
   "workspaces": [
     "frontend",
-    "mobile",
     "shared"
   ]
 }

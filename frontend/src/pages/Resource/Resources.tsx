@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ResourceCard from "../../components/Resource/ResourceCard";
 import { Link } from "react-router-dom";
-import type { PaginatedResponse, ResourceQuery } from "../../../../shared/types/resource";
-import { getResources } from "../../api/resources";
-import type { CategoryDto } from "../../../../shared/types/category";
-import { getCategories } from "../../api/categories";
+import type { PaginatedResponse, ResourceQuery } from "@shared/types/resource";
+import { getResources } from "@api/resources";
+import type { CategoryDto } from "@shared/types/category";
+import { getCategories } from "@api/categories";
 // import { Slider } from "@mui/material";
 
 export default function Resources() {
@@ -22,6 +22,7 @@ export default function Resources() {
     const totalPage = data?.total_pages || 0
     const currentPage = data?.page || 0
     const per_page = data?.per_page || 0
+    const resources = data?.resources || []
 
 
     const handlerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -129,7 +130,7 @@ export default function Resources() {
             </div>
 
             <div className="card-grid">
-                {Array.isArray(data?.resources) && data.resources.map(r => (
+                {Array.isArray(resources) && resources.map(r => (
                     <ResourceCard key={r.id} resource={r}/>
                 ))}
             </div>

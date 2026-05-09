@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import type { CreateCategoryDto } from "../../../../shared/types/category";
-import { createCategory } from "../../api/categories";
+import type { CreateCategoryDto } from "@shared/types/category";
+import { createCategory } from "@api/categories";
 export default function CreateCategory() {
 
     const [error, setError] = useState<string | null>(null)
