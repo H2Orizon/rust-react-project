@@ -1,8 +1,8 @@
 import type { AxiosInstance } from "axios";
-import type { ResgisterUserDto, UserDto, UserLoginDto } from "../types/users";
+import type { RegisterUserDto, UserDto, UserLoginDto } from "../types/users";
 
 export const userService = {
-    register: (api: AxiosInstance, dto: ResgisterUserDto) =>
+    register: (api: AxiosInstance, dto: RegisterUserDto) =>
         api.post<UserDto>("/user/register", dto),
 
     login: (api: AxiosInstance, dto: UserLoginDto) =>

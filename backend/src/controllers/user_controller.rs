@@ -5,10 +5,10 @@ use crate::{models::user_model::{CreateUser, LoginUserForm, UserDto}, services::
 
 
 #[post("/login", data="<form>")]
-pub async fn login(db: &State<DatabaseConnection>, form:Json<LoginUserForm>) -> Result<Json<String>, String>{
+pub async fn login(db: &State<DatabaseConnection>, form:Json<LoginUserForm>) -> Result<Json<String>, Status>{
     match user_service::login(db, form.into_inner()).await {
         Ok(token) => Ok(Json(token)),
-        Err(e) => Err(e.to_string())
+        Err(_) => Err(Status::Unauthorized)
     }
 }
 

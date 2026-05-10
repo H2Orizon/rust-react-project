@@ -32,22 +32,12 @@ export default function BookingCard({booking}: Props) {
                 </p>
 
                 <div className="resource-card-meta">
-                    <span>Stary date: {new Date(booking.start_date).toLocaleDateString("en-US",{
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })
-                    }</span>
-                    <span>End date: {new Date(booking.end_date).toLocaleDateString("en-US",{
-                            day:"numeric",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        })
-                    }</span>
+                    <span>Start date: 
+                        {new Date(booking.start_date).toLocaleDateString()}
+                    </span>
+                    <span>End date: 
+                        {new Date(booking.end_date).toLocaleDateString()}
+                    </span>
                 </div>
 
                 <div className="resource-card-footer">
@@ -62,7 +52,7 @@ export default function BookingCard({booking}: Props) {
                             <button onClick={(e) => { 
                                 e.stopPropagation()
                                 UpdateBookingStatus(booking.id, BookingStatus.Cancelled)
-                                }} className="btn danger">
+                            }} className="btn danger">
                                 Cancel
                             </button>
                         }

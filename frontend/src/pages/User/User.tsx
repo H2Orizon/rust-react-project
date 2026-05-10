@@ -33,12 +33,8 @@ export default function UserProfile(){
                 {userProfile.is_active ? (<p>Is active</p>) : (<p>Is disable</p>)}
                 <p>
                     {new Date(userProfile.created_at)
-                        .toLocaleDateString("en-US",{
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric"
-                        }
-                    )}
+                        .toLocaleDateString()
+                    }
                 </p>
             </div>
             <div>

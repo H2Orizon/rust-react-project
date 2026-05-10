@@ -12,8 +12,8 @@ type User = {
 type AuthContextType = {
     token: string | null
     user: User | null
-    login: (token: string) => void
-    logout: () => void
+    login: (token: string) => Promise<void>
+    logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -35,7 +35,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
                 setUser({
                     id: decode.sub,
                     username: decode.username,
-                    role: decode.username
+                    role: decode.role
                 })
             }
         }

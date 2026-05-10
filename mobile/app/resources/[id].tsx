@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { ResourceDto } from "@shared/types/resource";
 import { deleteResource, getResource } from "@/api/resources";
-import { useLocalSearchParams  } from "expo-router";
+import { router, useLocalSearchParams  } from "expo-router";
 import { View, Text, ScrollView, Pressable } from "react-native";
 
-import styles from "../styles/resource.styles"
+import styles from "app/styles/resource.styles"
+import { useAuth } from "@/context/AuthContext";
 
 export default function Resource(){
     const {id} = useLocalSearchParams()
+    const {user} = useAuth()
 
     const [resource, setResource] = useState<ResourceDto>()
     const [error, setError] = useState<string | null>(null)
@@ -32,6 +34,8 @@ export default function Resource(){
         try{
             setError(null)
             await deleteResource(id)
+
+            router.push("/")
             
         }catch(error){
             setError("Failed to delete resource")
@@ -98,15 +102,17 @@ export default function Resource(){
                 <Text style={styles.description}>
                     {resource.description}
                 </Text>
+                {user?.id === resource.user_id &&
+                    <Pressable
+                        style={styles.deleteButton}
+                        onPress={() => delete_resource(resource.id)}
+                    >
+                        <Text style={styles.deleteButtonText}>
+                            Delete Resource
+                        </Text>
+                    </Pressable>
+                }
 
-                <Pressable
-                    style={styles.deleteButton}
-                    onPress={() => delete_resource(resource.id)}
-                >
-                    <Text style={styles.deleteButtonText}>
-                        Delete Resource
-                    </Text>
-                </Pressable>
 
             </View>
         </ScrollView>

@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react";
-import BookingCard from "../Booking/BookingCard";
-import { BookingStatus, type BookingDto, type BookingQuery } from "@shared/types/booking";
-import { getBookings } from "@api/bookings";
+import { getBookings } from "@/api/bookings"
+import { BookingDto, BookingQuery, BookingStatus } from "@shared/types/booking"
+import BookingCard from "../booking/BookingCard"
+import { useEffect, useState } from "react"
+import { View, Text} from "react-native"
 
 type Props = {
     userId: number
 }
 
 export default function UserBookingAprove({userId}: Props) {
-
+    
     const [userBooking, setBookingDto] = useState<BookingDto[]>([])
     const [bookingQueru] = useState<BookingQuery>({
-            lessor_id: userId,
-            status: BookingStatus.Pending
+        lessor_id: userId,
+        status: BookingStatus.Pending
     })
 
     useEffect(() => {
@@ -20,13 +21,14 @@ export default function UserBookingAprove({userId}: Props) {
 
         getBookings(bookingQueru).then(setBookingDto)
     }, [bookingQueru])
-    
+
     return(
-        <div>
-            <h2>Bookings need aprove</h2>
+        <View>
+            <Text>Bookings need aprove</Text>
             {Array.isArray(userBooking) && userBooking.map(b =>
                 <BookingCard key={b.id} booking={b}/>
             )}
-        </div>
+        </View>
     )
+
 }

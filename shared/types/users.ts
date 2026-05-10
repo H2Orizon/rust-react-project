@@ -1,4 +1,4 @@
-export type ResgisterUserDto = {
+export type RegisterUserDto = {
     username: string
     email: string
     phone?: string

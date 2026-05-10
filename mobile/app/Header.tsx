@@ -29,7 +29,6 @@ export default function Header() {
     ]
 
     return (
-
         <View style={styles.container}>
 
             <View style={styles.topBar}>
@@ -83,7 +82,7 @@ export default function Header() {
                     ) : (
 
                         <View style={styles.authButtons}> 
-                            <Link href={"/"} asChild>
+                            <Link href={"/user/login"} asChild>
                                 <TouchableOpacity style={styles.loginButton}>
                                     <Text style={ styles.loginText}>
                                         Login
@@ -93,7 +92,7 @@ export default function Header() {
 
                             </Link>
 
-                            <Link href={"/"} asChild>
+                            <Link href={"/user/register"} asChild>
 
                                 <TouchableOpacity style={styles.registerButton}>
                                     <Text style={styles.registerText}>

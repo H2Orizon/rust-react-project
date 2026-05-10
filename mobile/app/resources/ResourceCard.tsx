@@ -2,7 +2,7 @@ import { View, Text, Pressable } from "react-native"
 import { ResourceListDto } from "@shared/types/resource"
 import { Link } from "expo-router"
 
-import styles from "../styles/resourceCard.styles"
+import styles from "app/styles/resourceCard.styles"
 
 type Props = {
     resource: ResourceListDto
