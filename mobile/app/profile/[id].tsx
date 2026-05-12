@@ -86,7 +86,7 @@ export default function Profile() {
                         <Text style={styles.value}>
                             {new Date(
                                 userProfile.created_at
-                            ).toLocaleDateString()}
+                            ).toLocaleString()}
                         </Text>
                     </View>
 

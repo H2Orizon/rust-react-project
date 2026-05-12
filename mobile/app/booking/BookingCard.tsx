@@ -58,13 +58,13 @@ export default function BookingCard({booking}: Props){
                         <Text style={styles.label}>Start:
                             <Text style={styles.value}>
                                 {" "}
-                                {new Date(booking.start_date).toLocaleDateString()}
+                                {new Date(booking.start_date).toLocaleString()}
                             </Text>
                         </Text>
                         <Text style={styles.label}>End:
                             <Text style={styles.value}>
                                 {" "}
-                                {new Date(booking.end_date).toLocaleDateString()}
+                                {new Date(booking.end_date).toLocaleString()}
                             </Text>
                         </Text>
                     </View>

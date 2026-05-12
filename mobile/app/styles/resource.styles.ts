@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native"
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f9fafb",
@@ -103,6 +103,82 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
     },
-})
 
-export default styles
+    actionGroup: {
+    marginTop: 24,
+    gap: 14
+},
+
+updateButton: {
+    height: 54,
+
+    borderRadius: 16,
+
+    backgroundColor: "#007bff",
+
+    justifyContent: "center",
+    alignItems: "center",
+
+    shadowColor: "#007bff",
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    shadowOffset: {
+        width: 0,
+        height: 4
+    },
+
+    elevation: 5
+},
+
+updateButtonText: {
+    color: "white",
+
+    fontSize: 16,
+    fontWeight: "700"
+},
+
+modalOverlay: {
+    flex: 1,
+
+    backgroundColor: "rgba(0,0,0,0.45)",
+
+    justifyContent: "center",
+
+    padding: 16
+},
+
+modalContainer: {
+    maxHeight: "92%",
+
+    backgroundColor: "white",
+
+    borderRadius: 24,
+
+    overflow: "hidden"
+},
+
+modalHeader: {
+    paddingHorizontal: 22,
+    paddingVertical: 18,
+
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
+
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+},
+
+modalTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111827"
+},
+
+modalClose: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#6b7280"
+},
+
+})

@@ -13,7 +13,7 @@ export default function Header() {
     const menu = [
         {
             label: "Create Resource",
-            to: "/resources/create",
+            to: "/createResource",
             show: !!user
         },
 

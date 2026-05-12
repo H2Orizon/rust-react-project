@@ -13,3 +13,6 @@ export const createResource = (dto: any) =>
 
 export const deleteResource = (id: number) =>
     resourceService.delete(api, id)
+
+export const updateResources = (dto: any, id:number) =>
+    resourceService.update(api, id, dto).then(res => res.data)

@@ -4,7 +4,7 @@ import {useForm, Controller} from "react-hook-form";
 import { registerUser } from "@/api/users";
 import { useState } from "react";
 
-import styles from "app/styles/register.styles";
+import { styles } from "app/styles/register.styles";
 import { router } from "expo-router";
 
 export default function Register(){
