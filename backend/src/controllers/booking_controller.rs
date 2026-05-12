@@ -1,10 +1,10 @@
 use rocket::{State, http::Status, serde::json::Json};
 use sea_orm::DatabaseConnection;
 
-use crate::{auth::guard::AuthUser, models::booking_model::{BookingDto, BookingQuery, CreateBooking, Model, UpdateStatus}, services::booking_service};
+use crate::{auth::guard::AuthUser, models::booking_model::{BookingDto, BookingQuery, CreateBooking, Model, PaginatedResponseBooking, UpdateStatus}, services::booking_service};
 
 #[get("/?<query..>")]
-pub async fn get_all_booking(db: &State<DatabaseConnection>, query: BookingQuery) -> Result<Json<Vec<BookingDto>>, Status>{
+pub async fn get_all_booking(db: &State<DatabaseConnection>, query: BookingQuery) -> Result<Json<PaginatedResponseBooking>, Status>{
     match booking_service::get_all_booking(db, query).await {
         Ok(bookings) => Ok(Json(bookings)),
         Err(_) => Err(Status::NotFound)

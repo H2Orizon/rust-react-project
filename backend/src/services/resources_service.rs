@@ -1,7 +1,7 @@
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::{self, Entity as CategoriesEntity}, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, PaginatedResponse, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
+use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::{self, Entity as CategoriesEntity}, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, PaginatedResponseResources, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
 
 pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{
     let resource = Entity::find_by_id(id).one(db)
@@ -10,7 +10,7 @@ pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, App
     Ok(resource)
 }
 
-pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Result<PaginatedResponse, AppError>{
+pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Result<PaginatedResponseResources, AppError>{
 
     let mut query = Entity::find()
         .find_also_related(CategoriesEntity);
@@ -33,10 +33,6 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
 
     if let Some(max_price) = query_param.max_price{
         query = query.filter(Column::Price.lte(max_price))
-    }
-
-    if let Some(limit) = query_param.per_page{
-        println!("\n\n\n\n\n data: {limit} \n\n\n\n\n")
     }
 
     let per_page = query_param.per_page.unwrap_or(10).clamp(1, 100);
@@ -64,14 +60,12 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
             price: res.price,
             location: res.location,
             capacity: res.capacity,
-            availble_now: res.capacity - booked as i32,
+            availble_now: res.capacity - booked as i32, //need a fix
             category: category.map(|c| c.name).unwrap_or("Unknown".into()),
         });
     }
 
-    // println!("\n\n\n\ndata:{:?}\n\n\n\n", resources_dtos);
-
-    Ok(PaginatedResponse { 
+    Ok(PaginatedResponseResources { 
         resources: resources_dtos, 
         total: total, 
         page: page, 

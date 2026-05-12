@@ -25,7 +25,7 @@ pub struct UpdateStatus{
     pub status: BookingStatus
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct BookingDto{
     pub id: i32,
     pub username: String,
@@ -41,6 +41,15 @@ pub struct BookingDto{
     pub created_at: DateTime<Utc>
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PaginatedResponseBooking{
+    pub bookings: Vec<BookingDto>,
+    pub total: u64,
+    pub page: u64,
+    pub per_page: u64,
+    pub total_pages: u64
+}
+
 #[derive(Debug, Deserialize, Serialize, Validate)]
 pub struct CreateBooking{
     pub resource_id: i32,
@@ -54,8 +63,11 @@ pub struct CreateBooking{
 #[derive(FromForm, Debug)]
 pub struct BookingQuery{
     pub user_id: Option<i32>,
+    pub resource_name: Option<String>,
     pub status: Option<BookingStatus>,
-    pub lessor_id: Option<i32>
+    pub lessor_id: Option<i32>,
+    pub page: Option<u64>,
+    pub per_page: Option<u64>
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation)]

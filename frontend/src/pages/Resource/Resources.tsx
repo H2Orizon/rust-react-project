@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ResourceCard from "../../components/Resource/ResourceCard";
 import { Link } from "react-router-dom";
-import type { PaginatedResponse, ResourceQuery } from "@shared/types/resource";
+import type { PaginatedResponseResource, ResourceQuery } from "@shared/types/resource";
 import { getResources } from "@api/resources";
 import type { CategoryDto } from "@shared/types/category";
 import { getCategories } from "@api/categories";
-// import { Slider } from "@mui/material";
 
 export default function Resources() {
-    const [data, setData] = useState<PaginatedResponse>()
+    const [data, setData] = useState<PaginatedResponseResource>()
     const [categories, setCategories] = useState<CategoryDto[]>([])
     const [query, setQuery] = useState<ResourceQuery>({
          resource_name: undefined,
@@ -119,9 +118,11 @@ export default function Resources() {
                             name="per_page"
                             onClick={mousHandler}
                             className={
-                                per_page === num
-                                    ? "active"
-                                    : ""
+                                `per-page-btn ${
+                                    per_page === num
+                                        ? "active"
+                                        : ""
+                                }`
                             }
                         >
                             {num}

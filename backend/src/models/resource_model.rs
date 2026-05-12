@@ -83,7 +83,7 @@ pub struct ResourceQuery{
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct PaginatedResponse{
+pub struct PaginatedResponseResources{
     pub resources: Vec<ResourceListDto>,
     pub total: u64,
     pub page: u64,

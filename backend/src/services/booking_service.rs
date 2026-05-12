@@ -4,7 +4,7 @@ use chrono::{ DateTime, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
 use validator::Validate;
 
-use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model}, resource_model, user_model}, services::{resources_service, user_service}, utility};
+use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model, PaginatedResponseBooking}, resource_model, user_model}, services::{resources_service, user_service}, utility};
 
 async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32,dto: &CreateBooking) -> Result<i32, AppError> {
 
@@ -71,11 +71,13 @@ pub async fn get_resource_booked(db: &DatabaseConnection, resource_id: i32) -> R
 }
 
 pub async fn get_booking_map(db: &DatabaseConnection, resource_ids: Vec<i32>) -> Result<HashMap<i32, i64>, AppError> {
+    
     let rows = Entity::find()
             .select_only()
             .column(Column::ResourceId)
             .column_as(Column::Id.count(), "count")
             .filter(Column::ResourceId.is_in(resource_ids.clone()))
+            .filter(Column::Status.eq(BookingStatus::Approved))
             .group_by(Column::ResourceId)
             .into_tuple::<(i32,i64)>()
             .all(db)
@@ -105,7 +107,7 @@ pub async fn get_next_availeble(db: &DatabaseConnection, resource_id: i32) -> Re
     Ok(next_available)
 }
 
-pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery) -> Result<Vec<BookingDto>, sea_orm::DbErr>{
+pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery) -> Result<PaginatedResponseBooking, sea_orm::DbErr>{
     let mut query = Entity::find()
         .order_by(Column::StartDate, Order::Desc)
         .find_also_related(user_model::Entity)
@@ -123,7 +125,19 @@ pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery)
         query = query.filter(resource_model::Column::UserId.eq(lessor_id))
     }
 
-    let bookings = query.all(db).await?;
+    if let Some(resource_name) = query_patam.resource_name{
+        query = query.filter(resource_model::Column::Name.contains(resource_name))
+    }
+
+    let page = query_patam.page.unwrap_or(10).clamp(1, 100);
+    let per_page = query_patam.per_page.unwrap_or(1).max(1);
+
+    let paginateor = query.paginate(db, per_page);
+
+    let total = paginateor.num_items().await?;
+    let total_page = paginateor.num_pages().await?;
+
+    let bookings = paginateor.fetch_page(page-1).await?;
 
     let mut dtos = Vec::new();
 
@@ -148,7 +162,13 @@ pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery)
         });
     }
 
-    Ok(dtos)
+    Ok(PaginatedResponseBooking{
+        bookings: dtos,
+        total: total,
+        page: page,
+        per_page: per_page,
+        total_pages: total_page
+    })
 
 }
 

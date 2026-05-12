@@ -22,10 +22,21 @@ export type BookingDto = {
     status: BookingStatus
 }
 
+export type PaginatedResponseBooking = {
+    bookings: BookingDto[]
+    total: number
+    page: number
+    per_page: number
+    total_pages: number
+}
+
 export type BookingQuery = {
-    user_id?: number,
-    status?: BookingStatus,
+    user_id?: number
+    resource_name?: string
+    status?: BookingStatus
     lessor_id?: number
+    per_page?: number
+    page?: number
 }
 
 export type BookingStatus = typeof BookingStatus[keyof typeof BookingStatus]

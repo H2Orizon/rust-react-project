@@ -31,7 +31,7 @@ export type CreateResourceDto = {
     auto_approve: boolean
 }
 
-export type PaginatedResponse = {
+export type PaginatedResponseResource = {
     resources: ResourceListDto[]
     total: number
     page: number

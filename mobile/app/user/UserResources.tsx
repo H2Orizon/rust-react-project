@@ -1,5 +1,5 @@
 import { getResources } from "@/api/resources"
-import { PaginatedResponse, ResourceQuery } from "@shared/types/resource"
+import { PaginatedResponseResource, ResourceQuery } from "@shared/types/resource"
 import ResourceCard from "../resources/ResourceCard"
 import { useEffect, useState } from "react"
 import { View, Text } from "react-native"
@@ -9,7 +9,7 @@ type Props = {
 }
 
 export default function UserResources({userId}: Props) {
-    const [userResources, setUserResorces] = useState<PaginatedResponse>()
+    const [userResources, setUserResorces] = useState<PaginatedResponseResource>()
     const [resourceQuery] = useState<ResourceQuery>({
         user_id: userId
     })

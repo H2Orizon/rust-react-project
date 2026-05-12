@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import BookingCard from "../Booking/BookingCard";
-import { BookingStatus, type BookingDto, type BookingQuery } from "@shared/types/booking";
+import { BookingStatus, type PaginatedResponseBooking, type BookingQuery } from "@shared/types/booking";
 import { getBookings } from "@api/bookings";
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
 
 export default function UserBookingAprove({userId}: Props) {
 
-    const [userBooking, setBookingDto] = useState<BookingDto[]>([])
+    const [userBooking, setBookingDto] = useState<PaginatedResponseBooking>()
     const [bookingQueru] = useState<BookingQuery>({
             lessor_id: userId,
             status: BookingStatus.Pending
@@ -24,7 +24,7 @@ export default function UserBookingAprove({userId}: Props) {
     return(
         <div>
             <h2>Bookings need aprove</h2>
-            {Array.isArray(userBooking) && userBooking.map(b =>
+            {Array.isArray(userBooking?.bookings) && userBooking.bookings.map(b =>
                 <BookingCard key={b.id} booking={b}/>
             )}
         </div>

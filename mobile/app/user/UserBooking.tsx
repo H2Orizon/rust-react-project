@@ -1,5 +1,5 @@
 import { getBookings } from "@/api/bookings"
-import { BookingDto, BookingQuery, BookingStatus } from "@shared/types/booking"
+import { PaginatedResponseBooking, BookingQuery, BookingStatus } from "@shared/types/booking"
 import BookingCard from "../booking/BookingCard"
 import { useEffect, useState } from "react"
 import { Text, View } from "react-native"
@@ -10,7 +10,7 @@ type Props = {
 }
 
 export default function UserBooking({userId}: Props){
-    const [userBooking, setBookingDto] = useState<BookingDto[]>([])
+    const [userBooking, setBookingDto] = useState<PaginatedResponseBooking>()
     const [bookingQueru, setBookingQuery] = useState<BookingQuery>({
         user_id: userId,
         status: undefined
@@ -43,7 +43,7 @@ export default function UserBooking({userId}: Props){
                     ))}
                 </Picker>
             </View>
-            {Array.isArray(userBooking) && userBooking.map(b => 
+            {Array.isArray(userBooking?.bookings) && userBooking.bookings.map(b => 
                 <BookingCard key={b.id} booking={b}/>
             )}
         </View>

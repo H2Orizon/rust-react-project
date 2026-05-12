@@ -16,10 +16,11 @@ export default function Header() {
             to: "/resources/create",
             show: !!user
         },
+
         {
             label: "Admin panel",
             to: "/admin",
-            show: !!user
+            show: !!user && user.role.toLowerCase() == "admin"
         },
         {
             label: "Profile",

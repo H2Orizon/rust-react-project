@@ -2,14 +2,14 @@ import { getCategories } from "@/api/categories"
 import { useEffect, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { CategoryDto } from "@shared/types/category"
-import { PaginatedResponse, ResourceQuery } from "@shared/types/resource"
+import { PaginatedResponseResource, ResourceQuery } from "@shared/types/resource"
 import { getResources } from "@/api/resources"
 import ResourceCard from "./resources/ResourceCard"
 
 export default function Home() {
 
     const [categories, setCategories] = useState<CategoryDto[]>([])
-    const [data, setData] = useState<PaginatedResponse>()
+    const [data, setData] = useState<PaginatedResponseResource>()
     const [query, setQuery] = useState<ResourceQuery>({
         resource_name: undefined,
          category: undefined,

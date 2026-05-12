@@ -1,36 +1,39 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import type { CreateResourceDto } from "@shared/types/resource";
-import { createResource } from "@api/resources";
-import type { CategoryDto } from "@shared/types/category";
-import { getCategories } from "@api/categories";
+import { getCategories } from "@/api/categories"
+import { updateResource } from "@/api/resources"
+import { useAuth } from "@/context/AuthContext"
+import type { CategoryDto } from "@shared/types/category"
+import type { CreateResourceDto, ResourceDto } from "@shared/types/resource"
+import { useEffect, useState } from "react"
 
-export default function ResourceForm(){
+type Props = {
+    resource: ResourceDto
+}
 
-    const navigator = useNavigate()
-
+export default function UpdateResource({resource}: Props){
+    const {user} = useAuth()
+    
     const [categories, setCategories] = useState<CategoryDto[]>([])
+    const category_id = categories.find((c) => (c.name === resource.category))?.id || 1
 
-    useEffect(() =>{
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
         getCategories().then(setCategories)
     }, [])
 
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-
     const [form, setForm] = useState<CreateResourceDto>({
-        name: "",
-        description: "",
-        price: 0,
-        capacity: 0,
-        location: "",
-        category_id: 1,
+        name: resource.name,
+        description: resource.description,
+        price: resource.price,
+        capacity: resource.capacity,
+        location: resource.location,
+        category_id: category_id,
         auto_approve: false
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const {name, type, value} = e.target
-        
+
         setForm({
             ...form,
             [name]: type === "checkbox"
@@ -49,35 +52,32 @@ export default function ResourceForm(){
         return null
     }
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault()
-
-        const validationError = validate()
-        if (validationError){
-            setError(validationError)
-            return
-        }
-
+        const handleSubmit = async (e: React.SubmitEvent) => {
+            e.preventDefault()
+    
+            const validationError = validate()
+            if (validationError){
+                setError(validationError)
+                return
+            }
+    
         try {
-            setLoading(true)
             setError(null)
+            if (user?.id !== resource.user_id) return
 
-            const resource = await createResource({
+            await updateResource(resource.id, {
                 ...form,
                 price: Number(form.price),
                 capacity: Number(form.capacity),
                 category_id: Number(form.category_id)
             })
-            navigator(`/resources/${resource.id}`)
+            window.location.reload()
 
         } catch (err) {
             setError("Failed to create resource")
-        }finally{
-            setLoading(false)
         }
     }
-
-    return (
+        return (
         <div className="form-container">
             <div className="form-card">
 
@@ -138,11 +138,8 @@ export default function ResourceForm(){
                     Autho approve?:
                 <input type="checkbox" name="auto_approve" onChange={handleChange}/>
                 </span>
-                <button 
-                    className="btn-primary"
-                    disabled={loading}
-                >
-                    {loading ? "Creating..." : "Create resource"}
+                <button className="btn-primary">
+                    "Update resource"
                 </button>
 
                 </form>
@@ -150,5 +147,4 @@ export default function ResourceForm(){
             </div>
         </div>
     )
-
 }

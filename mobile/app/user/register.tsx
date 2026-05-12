@@ -22,8 +22,6 @@ export default function Register(){
         }
     })
 
-    //todo
-
     const password = watch("password")
 
     const onSubmit = async(data: RegisterUserDto) => {
@@ -33,7 +31,7 @@ export default function Register(){
 
             await registerUser(data)
 
-            router.replace("./user/login")
+            router.replace("/user/login")
         } catch(err){
             setServerError("Registration failed")
         } finally {
@@ -154,7 +152,7 @@ export default function Register(){
                             message: "Minimum 6 characters",
                         },
                         pattern: {
-                            value: /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).+$/,
+                            value: /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>_]).+$/,
                             message:
                             "Password must contain 1 uppercase letter and 1 special character",
                         },

@@ -78,48 +78,85 @@ export default function BookingForm({resorsId}: Props){
         }
     }
 
-        return (
-        <div className="booking-card">
-            <form className="booking-form" onSubmit={handleSubmit}>
+    return (
+        <div className="card">
+            <form
+                className="form"
+                onSubmit={handleSubmit}
+            >
 
-                {error && <p className="form-error">{error}</p>}
+                {error && (
+                    <p className="form-error">
+                        {error}
+                    </p>
+                )}
 
-                <input
-                    name="location"
-                    placeholder="Location"
-                    onChange={handleChange}
-                />
+                <div className="form-group">
 
-                <input
-                    name="quantity"
-                    type="number"
-                    placeholder="Quantity"
-                    onChange={handleChange}
-                />
+                    <label className="form-label">
+                        Location
+                    </label>
+
+                    <input
+                        className="input"
+                        name="location"
+                        placeholder="Enter location"
+                        onChange={handleChange}
+                    />
+
+                </div>
+
+                <div className="form-group">
+
+                    <label className="form-label">
+                        Quantity
+                    </label>
+
+                    <input
+                        className="input"
+                        name="quantity"
+                        type="number"
+                        placeholder="Enter quantity"
+                        onChange={handleChange}
+                    />
+
+                </div>
 
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-                    <div className="booking-row">
+                    <div className="grid grid-2">
 
-                        <DateTimePicker
-                            label="Start Date"
-                            value={startDate}
-                            onChange={handleStartChange}
-                        />
+                        <div className="form-group">
 
-                        <DateTimePicker
-                            label="End Date"
-                            value={endDate}
-                            onChange={handleEndChange}
-                        />
+                            <DateTimePicker
+                                label="Start Date"
+                                value={startDate}
+                                onChange={handleStartChange}
+                            />
+
+                        </div>
+
+                        <div className="form-group">
+
+                            <DateTimePicker
+                                label="End Date"
+                                value={endDate}
+                                onChange={handleEndChange}
+                            />
+
+                        </div>
 
                     </div>
 
                 </LocalizationProvider>
 
-                <button className="btn-primary">
-                    Book
-                </button>
+                <div className="section-actions">
+
+                    <button className="btn btn-primary">
+                        Book Resource
+                    </button>
+
+                </div>
 
             </form>
         </div>

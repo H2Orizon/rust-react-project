@@ -13,71 +13,145 @@ export default function BookingCard({booking}: Props) {
     const canEdit =
         booking.status === BookingStatus.Pending
 
-    const UpdateBookingStatus = async (id: number, status: BookingStatus) =>{
+    const updateStatus = async (id: number, status: BookingStatus) =>{
         await updateBookingStatus(id, status)
         window.location.reload()
     }
 
-    return(
+    const getStatusClass = () => {
+
+        switch (booking.status) {
+
+            case BookingStatus.Approved:
+                return "status-approved"
+
+            case BookingStatus.Rejected:
+                return "status-rejected"
+
+            case BookingStatus.Cancelled:
+                return "status-cancelled"
+
+            default:
+                return "status-pending"
+        }
+    }
+
+    return (
+
         <div
-            className="resource-card"
-
-            onClick={() => navigation(`/resources/${booking.resource_id}`)}
+            className="booking-card"
+            onClick={() =>
+                navigation(
+                    `/resources/${booking.resource_id}`
+                )
+            }
         >
-            <div className="resource-card-content">
-                <h3>{booking.resource_name}</h3>
-
-                <p className="resource-card-description">
-                    {booking.username}
-                </p>
-
-                <div className="resource-card-meta">
-                    <span>Start date: 
-                        {new Date(booking.start_date).toLocaleDateString()}
-                    </span>
-                    <span>End date: 
-                        {new Date(booking.end_date).toLocaleDateString()}
-                    </span>
+            <div className="booking-card-header">
+                <div>
+                    <h3 className="booking-card-title">
+                        {booking.resource_name}
+                    </h3>
+                    <p className="booking-card-user">
+                        {booking.username}
+                    </p>
+                </div>
+                <div
+                    className={`status ${getStatusClass()}`}
+                >
+                    {booking.status}
                 </div>
 
-                <div className="resource-card-footer">
-                    <span>{booking.location || "N/A"}</span>
-                    <span>{booking.quantity || "1"}</span>
-                    <span>{booking.status}</span>
-                </div>
-                
-                { canEdit &&
-                    <div>
-                        {user?.id === booking.user_id &&
-                            <button onClick={(e) => { 
-                                e.stopPropagation()
-                                UpdateBookingStatus(booking.id, BookingStatus.Cancelled)
-                            }} className="btn danger">
-                                Cancel
-                            </button>
-                        }
-                        {user?.id === booking.lessor_id &&
-                            <>
-                                <button onClick={(e) => { 
-                                    e.stopPropagation()
-                                    UpdateBookingStatus(booking.id, BookingStatus.Approved)
-                                    }} className="btn danger">
-                                    Approv
-                                </button>
-
-                                <button onClick={(e) => { 
-                                    e.stopPropagation()
-                                    UpdateBookingStatus(booking.id, BookingStatus.Rejected)
-                                    }} className="btn danger">
-                                    Reject
-                                </button>
-                            </>
-                        }
-
-                    </div>
-                }
             </div>
+            <div className="booking-card-grid">
+                <div className="booking-info-box">
+                    <span className="booking-label">
+                        Start
+                    </span>
+                    <span className="booking-value">
+                        {new Date(
+                            booking.start_date
+                        ).toLocaleString()}
+                    </span>
+                </div>
+                <div className="booking-info-box">
+                    <span className="booking-label">
+                        End
+                    </span>
+                    <span className="booking-value">
+                        {new Date(
+                            booking.end_date
+                        ).toLocaleString()}
+                    </span>
+                </div>
+            </div>
+            <div className="booking-card-grid">
+                <div className="booking-info-box">
+                    <span className="booking-label">
+                        Location
+                    </span>
+                    <span className="booking-value">
+                        {booking.location || "N/A"}
+                    </span>
+                </div>
+                <div className="booking-info-box">
+                    <span className="booking-label">
+                        Quantity
+                    </span>
+                    <span className="booking-value">
+                        {booking.quantity || "1"}
+                    </span>
+                </div>
+            </div>
+            {canEdit && (
+                <div
+                    className="booking-card-actions"
+                    onClick={(e) =>
+                        e.stopPropagation()
+                    }
+                >
+                    {user?.id === booking.user_id && (
+                        <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                                updateStatus(
+                                    booking.id,
+                                    BookingStatus.Cancelled
+                                )
+                            }
+                        >
+                            Cancel
+                        </button>
+                    )}
+                    {user?.id === booking.lessor_id && (
+                        <>
+                            <button
+                                className="btn btn-success"
+                                onClick={() =>
+                                    updateStatus(
+                                        booking.id,
+                                        BookingStatus.Approved
+                                    )
+                                }
+                            >
+                                Approve
+                            </button>
+                            <button
+                                className="btn btn-warning"
+                                onClick={() =>
+                                    updateStatus(
+                                        booking.id,
+                                        BookingStatus.Rejected
+                                    )
+                                }
+                            >
+                                Reject
+                            </button>
 
+                        </>
+                    )}
+
+                </div>
+            )}
         </div>
     )
 }

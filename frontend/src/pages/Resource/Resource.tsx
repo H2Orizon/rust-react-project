@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import BookingForm from "../../components/Booking/BookingForm";
 import type { ResourceDto } from "@shared/types/resource";
 import { deleteResource, getResource } from "@api/resources";
+import UpdateResource from "@/components/Resource/UpdateResourceFrom";
 
 export default function Resource() {
 
@@ -12,6 +13,10 @@ export default function Resource() {
 
     const [resource, setResource] = useState<ResourceDto>()
     const [error, setError] = useState<string | null>(null)
+
+    const [showBooking, setShowBooking] =  useState(false)
+    const [showEdit, setShowEdit] = useState(false)
+
     const navigator = useNavigate()
 
     useEffect(() =>{
@@ -35,53 +40,230 @@ export default function Resource() {
     }
 
     return(
-    <div className="page-container">
+<div className="page-container">
 
-        {error && <p className="error">{error}</p>}
+    {error && (
+        <p className="error">
+            {error}
+        </p>
+    )}
 
-        <div className="page-layout">
+    <div className="page-layout">
 
-            <div className="page-media">
-                <div className="media-placeholder">
-                    Carousel Images
-                </div>
+        <div className="page-media">
+
+            <div className="media-placeholder">
+                Carousel Images
             </div>
 
-            <div className="page-content">
-                <h1>{resource.name}</h1>
+        </div>
 
-                <div className="page-meta">
-                    <span>Price: {resource.price}$</span>
-                    <span>Capacity: {resource.capacity}</span>
-                    <span>Category: {resource.category}</span>
-                    {resource.availble_now > 0 ? (
-                        <p>Available: {resource.availble_now}</p>
-                    ) : (
-                        <p>
-                            Fully booked.
-                            Available again at: {new Date(resource.next_available_at).toLocaleString()}
-                        </p>
-                    )}
+        <div className="page-content">
+
+            <div className="resource-header">
+
+                <div>
+                    <h1 className="resource-title">
+                        {resource.name}
+                    </h1>
+
+                    <p className="resource-category">
+                        {resource.category}
+                    </p>
                 </div>
+
+                {resource.availble_now > 0 ? (
+                    <div className="resource-status available">
+                        {resource.availble_now} available
+                    </div>
+                ) : (
+                    <div className="resource-status unavailable">
+                        Fully booked
+                    </div>
+                )}
+
+            </div>
+
+            <div className="resource-meta-grid">
+
+                <div className="meta-card">
+
+                    <span className="meta-label">
+                        Price
+                    </span>
+
+                    <strong className="meta-value">
+                        ${resource.price}
+                    </strong>
+
+                </div>
+
+                <div className="meta-card">
+
+                    <span className="meta-label">
+                        Capacity
+                    </span>
+
+                    <strong className="meta-value">
+                        {resource.capacity}
+                    </strong>
+
+                </div>
+
+                <div className="meta-card">
+
+                    <span className="meta-label">
+                        Category
+                    </span>
+
+                    <strong className="meta-value">
+                        {resource.category}
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <div className="resource-description-card">
+
+                <h3>Description</h3>
 
                 <p className="page-description">
                     {resource.description}
                 </p>
-                
-                { user?.id === resource.user_id && (
-                    <button
-                        className="btn-danger"
-                        onClick={() => delete_resource(resource.id)}
-                    >
-                        Delete
-                    </button>
-                )}
 
+            </div>
+
+            {resource.availble_now <= 0 && (
+                <div className="next-available-box">
+
+                    Available again at:
+
+                    <strong>
+                        {" "}
+                        {new Date(
+                            resource.next_available_at
+                        ).toLocaleString()}
+                    </strong>
+
+                </div>
+            )}
+
+            <div className="resource-actions">
+
+                <button
+                    className="btn-primary"
+                    onClick={() =>
+                        setShowBooking(true)
+                    }
+                >
+                    Book Resource
+                </button>
+
+                {user?.id === resource.user_id && (
+                    <>
+                        <button
+                            className="btn-outline"
+                            onClick={() =>
+                                setShowEdit(true)
+                            }
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            className="btn-danger"
+                            onClick={() =>
+                                delete_resource(resource.id)
+                            }
+                        >
+                            Delete
+                        </button>
+                    </>
+                )}
 
             </div>
 
         </div>
-        <BookingForm resorsId={Number(id)}/>
+
+    </div>
+
+        {showBooking && (
+                <div
+                    className="modal-overlay"
+                    onClick={() =>
+                        setShowBooking(false)
+                    }
+                >
+                    <div
+                        className="modal-window"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+
+                        <div className="modal-header">
+
+                            <h2>
+                                Book Resource
+                            </h2>
+
+                            <button
+                                className="modal-close"
+                                onClick={() =>
+                                    setShowBooking(false)
+                                }
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                        <BookingForm
+                            resorsId={Number(id)}
+                        />
+
+                    </div>
+                </div>
+            )}
+            {showEdit && (
+                <div
+                    className="modal-overlay"
+                    onClick={() =>
+                        setShowEdit(false)
+                    }
+                >
+                    <div
+                        className="modal-window"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+
+                        <div className="modal-header">
+
+                            <h2>
+                                Edit Resource
+                            </h2>
+
+                            <button
+                                className="modal-close"
+                                onClick={() =>
+                                    setShowEdit(false)
+                                }
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                        <UpdateResource
+                            resource={resource}
+                        />
+
+                    </div>
+                </div>
+            )}
     </div>
     )
 
