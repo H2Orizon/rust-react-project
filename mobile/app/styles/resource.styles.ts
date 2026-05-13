@@ -181,4 +181,32 @@ modalClose: {
     color: "#6b7280"
 },
 
+bookButton: {
+    marginTop: 24,
+
+    backgroundColor: "#007bff",
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    alignItems: "center",
+
+    shadowColor: "#007bff",
+    shadowOffset: {
+        width: 0,
+        height: 6
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+
+    elevation: 5
+},
+
+bookButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+},
+
 })

@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import { ResourceDto } from "@shared/types/resource";
-import { deleteResource, getResource } from "@/api/resources";
-import { router, useLocalSearchParams  } from "expo-router";
-import { View, Text, ScrollView, Pressable, Modal } from "react-native";
+import { useEffect, useState } from "react"
+import { ResourceDto } from "@shared/types/resource"
+import { deleteResource, getResource } from "@/api/resources"
+import { router, useLocalSearchParams  } from "expo-router"
+import { View, Text, ScrollView, Pressable, Modal } from "react-native"
 
 import { styles } from "app/styles/resource.styles"
-import { useAuth } from "@/context/AuthContext";
-import UpdateResource from "./UpdateResource";
+import { useAuth } from "@/context/AuthContext"
+import UpdateResource from "./UpdateResource"
+import BookingForm from "./BookingForm"
 
 export default function Resource(){
     const {id} = useLocalSearchParams()
@@ -15,6 +16,7 @@ export default function Resource(){
     const [resource, setResource] = useState<ResourceDto>()
     const [error, setError] = useState<string | null>(null)
     const [openUpdateModal, setOpenUpdateModal] = useState(false)
+    const [openBookingModal, setOpenBookingModal] = useState(false)
 
     const loadResource = async () => {
         if (!id) return
@@ -122,6 +124,19 @@ export default function Resource(){
                     <Text style={styles.description}>
                         {resource.description}
                     </Text>
+                    {user?.id &&
+                        <Pressable
+                            style={styles.bookButton}
+                            onPress={() =>
+                                setOpenBookingModal(true)
+                            }
+                        >
+                            <Text style={styles.bookButtonText}>
+                                Book Now
+                            </Text>
+                        </Pressable> 
+                    }
+
 
                     {user?.id === resource.user_id && (
 
@@ -142,6 +157,7 @@ export default function Resource(){
                                 >
                                     Delete Resource
                                 </Text>
+
                             </Pressable>
 
                             <Pressable
@@ -213,6 +229,47 @@ export default function Resource(){
                                 }
                             }
                             resource={resource}
+                        />
+
+                    </View>
+
+                </View>
+
+            </Modal>
+
+            <Modal
+                visible={openBookingModal}
+                animationType="slide"
+                transparent
+                onRequestClose={() =>
+                    setOpenBookingModal(false)
+                }
+            >
+
+                <View style={styles.modalOverlay}>
+
+                    <View style={styles.modalContainer}>
+
+                        <View style={styles.modalHeader}>
+
+                            <Text style={styles.modalTitle}>
+                                Create Booking
+                            </Text>
+
+                            <Pressable
+                                onPress={() =>
+                                    setOpenBookingModal(false)
+                                }
+                            >
+                                <Text style={styles.modalClose}>
+                                    ✕
+                                </Text>
+                            </Pressable>
+
+                        </View>
+
+                        <BookingForm
+                            resorsId={resource.id}
                         />
 
                     </View>

@@ -13,7 +13,6 @@ type Props={
 export default function BookingForm({resorsId}: Props){
 
     const {user} = useAuth()
-    console.error(resorsId)
 
     const [form, setForm] = useState<CreateBookingDto>({
         resource_id: Number(resorsId),

@@ -11,16 +11,18 @@ type Props = {
 
 export default function UserBooking({userId}: Props){
     const [userBooking, setBookingDto] = useState<PaginatedResponseBooking>()
-    const [bookingQueru, setBookingQuery] = useState<BookingQuery>({
+    const [bookingQuery, setBookingQuery] = useState<BookingQuery>({
         user_id: userId,
         status: undefined
     })
 
     useEffect(() => {
-        if(!userId) return
+        if (!bookingQuery.user_id) return
 
-        getBookings(bookingQueru).then(setBookingDto)
-    }, [bookingQueru])
+        getBookings(bookingQuery).then(setBookingDto)
+    }, [bookingQuery])
+
+     const bookings = userBooking?.bookings || []
 
     return(
         <View>
@@ -29,11 +31,13 @@ export default function UserBooking({userId}: Props){
             </Text>
             <View>
                 <Picker
-                    selectedValue={bookingQueru.status || ""}
+                    selectedValue={bookingQuery.status || ""}
                     onValueChange={(value) =>
                         setBookingQuery(prey => ({
                             ...prey,
-                            status: value === "" ? undefined : value as BookingStatus
+                            status: value === ""
+                            ? undefined
+                            : value as BookingStatus
                         }))
                     }
                 >
@@ -43,7 +47,7 @@ export default function UserBooking({userId}: Props){
                     ))}
                 </Picker>
             </View>
-            {Array.isArray(userBooking?.bookings) && userBooking.bookings.map(b => 
+            {Array.isArray(bookings) && bookings.map(b => 
                 <BookingCard key={b.id} booking={b}/>
             )}
         </View>

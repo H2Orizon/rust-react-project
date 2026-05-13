@@ -5,7 +5,7 @@ import {BookingStatus} from "../types/booking";
 export const bookingService = {
     
     getAll: (api: AxiosInstance, query?: BookingQuery ) =>
-        api.get<PaginatedResponseBooking>("/booking", { params:query }),
+        api.get<PaginatedResponseBooking>("/booking/", { params:query }),
 
     getOne: (api: AxiosInstance, id: number) =>
         api.get<BookingDto>(`/booking/${id}`),

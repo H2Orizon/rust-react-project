@@ -15,19 +15,24 @@ type TabType =
     | "requests"
 
 export default function Profile() {
-    const {id} = useLocalSearchParams()
+    
 
     const [userProfile, setUserProfile] = useState<UserDto>()
     const [activeTab, setActiveTab] = useState<TabType>()
 
+    const params = useLocalSearchParams()
+    const userId = Array.isArray(params.id)
+    ? Number(params.id[0])
+    : Number(params.id)
+
     useEffect(() => {
-        if (!id) return
+        if (!userId) return
 
         setActiveTab("resources")
         
-        getProfile(Number(id)).then(setUserProfile)
+        getProfile(Number(userId)).then(setUserProfile)
 
-    }, [id])
+    }, [userId])
 
 
     if (!userProfile){
@@ -168,7 +173,7 @@ export default function Profile() {
                             </Text>
 
                             <UserResources
-                                userId={Number(id)}
+                                userId={Number(userId)}
                             />
                         </>
                     )}
@@ -182,7 +187,7 @@ export default function Profile() {
                             </Text>
 
                             <UserBooking
-                                userId={Number(id)}
+                                userId={Number(userId)}
                             />
                         </>
                     )}
@@ -196,7 +201,7 @@ export default function Profile() {
                             </Text>
 
                             <UserBookingAprove
-                                userId={Number(id)}
+                                userId={Number(userId)}
                             />
                         </>
                     )}

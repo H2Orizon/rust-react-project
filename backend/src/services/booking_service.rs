@@ -129,8 +129,9 @@ pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery)
         query = query.filter(resource_model::Column::Name.contains(resource_name))
     }
 
-    let page = query_patam.page.unwrap_or(10).clamp(1, 100);
-    let per_page = query_patam.per_page.unwrap_or(1).max(1);
+    let page = query_patam.page.unwrap_or(1).max(1);
+
+    let per_page = query_patam.per_page.unwrap_or(10).clamp(1, 100);
 
     let paginateor = query.paginate(db, per_page);
 
