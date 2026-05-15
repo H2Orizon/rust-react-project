@@ -9,6 +9,9 @@ export default function ResourceCard({resource}: Props) {
 
     const navigator = useNavigate()
 
+    const image = resource.image || undefined
+
+    console.log(image)
     return (
         <div
             className="resource-card"
@@ -17,7 +20,16 @@ export default function ResourceCard({resource}: Props) {
             }
         >
             <div className="resource-card-image">
-                Image
+                {image ? (
+                    <img
+                        src={`http://localhost:8888/uploads/${image.path}`}
+                        alt={resource.name}
+                    />
+                ) : (
+                    <div className="no-image">
+                        No Image
+                    </div>
+                )}
             </div>
 
             <div className="resource-card-content">

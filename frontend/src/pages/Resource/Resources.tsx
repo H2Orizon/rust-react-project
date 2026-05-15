@@ -22,8 +22,7 @@ export default function Resources() {
     const currentPage = data?.page || 0
     const per_page = data?.per_page || 0
     const resources = data?.resources || []
-
-
+    
     const handlerChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setQuery({
             ...query,
@@ -48,6 +47,7 @@ export default function Resources() {
     useEffect(() => {
         getCategories().then(setCategories)
     }, [])
+
 
     return(
         <div className="page-container">

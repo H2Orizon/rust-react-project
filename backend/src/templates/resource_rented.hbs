@@ -1,0 +1,212 @@
+<html>
+  <body
+    style="
+      margin: 0;
+      padding: 40px 0;
+      background-color: #f3f4f6;
+      font-family: Arial, sans-serif;
+    "
+  >
+    <table
+      align="center"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width: 600px"
+    >
+      <tr>
+        <td>
+          <div
+            style="
+              background: white;
+              border-radius: 20px;
+              overflow: hidden;
+              box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            "
+          >
+            <!-- Header -->
+            <div
+              style="
+                background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                padding: 32px;
+                text-align: center;
+              "
+            >
+              <h1
+                style="
+                  color: white;
+                  margin: 0;
+                  font-size: 28px;
+                "
+              >
+                Resource Booked
+              </h1>
+
+              <p
+                style="
+                  color: #dbeafe;
+                  margin-top: 10px;
+                  font-size: 15px;
+                "
+              >
+                Your resource has a new booking
+              </p>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 32px">
+              <p
+                style="
+                  font-size: 16px;
+                  color: #374151;
+                  margin-top: 0;
+                "
+              >
+                Hello <b>{{username}}</b>,
+              </p>
+
+              <!-- Resource Card -->
+              <div
+                style="
+                  border: 1px solid #e5e7eb;
+                  border-radius: 18px;
+                  padding: 24px;
+                  margin: 24px 0;
+                  background: #f9fafb;
+                "
+              >
+                <h2
+                  style="
+                    margin: 0 0 12px 0;
+                    color: #111827;
+                    font-size: 24px;
+                  "
+                >
+                  {{resource_name}}
+                </h2>
+
+                <p
+                  style="
+                    margin: 0;
+                    color: #6b7280;
+                    font-size: 15px;
+                  "
+                >
+                  Booked by
+                  <b style="color: #2563eb">
+                    {{renter_name}}
+                  </b>
+                </p>
+
+                <!-- Dates -->
+                <div
+                  style="
+                    margin-top: 24px;
+                    display: flex;
+                    gap: 16px;
+                  "
+                >
+                  <div
+                    style="
+                      flex: 1;
+                      background: white;
+                      padding: 16px;
+                      border-radius: 12px;
+                      border: 1px solid #e5e7eb;
+                    "
+                  >
+                    <p
+                      style="
+                        margin: 0 0 6px 0;
+                        color: #9ca3af;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                      "
+                    >
+                      Start Date
+                    </p>
+
+                    <p
+                      style="
+                        margin: 0;
+                        color: #111827;
+                        font-size: 15px;
+                        font-weight: bold;
+                      "
+                    >
+                      {{start_date}}
+                    </p>
+                  </div>
+
+                  <div
+                    style="
+                      flex: 1;
+                      background: white;
+                      padding: 16px;
+                      border-radius: 12px;
+                      border: 1px solid #e5e7eb;
+                    "
+                  >
+                    <p
+                      style="
+                        margin: 0 0 6px 0;
+                        color: #9ca3af;
+                        font-size: 12px;
+                        text-transform: uppercase;
+                      "
+                    >
+                      End Date
+                    </p>
+
+                    <p
+                      style="
+                        margin: 0;
+                        color: #111827;
+                        font-size: 15px;
+                        font-weight: bold;
+                      "
+                    >
+                      {{end_date}}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Info -->
+              <p
+                style="
+                  color: #6b7280;
+                  font-size: 14px;
+                  line-height: 1.6;
+                "
+              >
+                You received this email because your resource was successfully
+                booked through the platform.
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div
+              style="
+                background: #f9fafb;
+                padding: 20px;
+                text-align: center;
+                border-top: 1px solid #e5e7eb;
+              "
+            >
+              <p
+                style="
+                  margin: 0;
+                  color: #9ca3af;
+                  font-size: 13px;
+                "
+              >
+                Resource Booking Platform
+              </p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

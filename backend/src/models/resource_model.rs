@@ -3,7 +3,7 @@ use sea_orm::{entity::prelude::*};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::models::{category_model, user_model};
+use crate::models::{category_model, image_model::{self, ImageDto}, user_model};
 
 #[derive(Clone, Debug, DeriveEntityModel, PartialEq, Serialize)]
 #[sea_orm(table_name = "resources")]
@@ -34,7 +34,8 @@ pub struct ResourceDto{
     pub category: String,
     pub username: String,
     pub user_id: i32,
-    pub auto_approved: bool
+    pub auto_approved: bool,
+    pub images: Option<Vec<ImageDto>>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -46,6 +47,7 @@ pub struct ResourceListDto{
     pub availble_now: i32,
     pub location: String,
     pub category: String,
+    pub image: Option<ImageDto>
 }
 
 #[derive(Deserialize, Validate, Debug)]
@@ -68,7 +70,7 @@ pub struct CreateResource{
     pub capacity: Option<i32>,
     pub location: String,
     pub category_id: i32,
-    pub auto_approve: bool
+    pub auto_approved: bool
 }
 
 #[derive(FromForm, Debug)]
@@ -106,6 +108,9 @@ pub enum Relation {
         to = "user_model::Column::Id"
     )]
     Users,
+    
+    #[sea_orm(has_many = "crate::models::image_model::Entity")]
+    ResourceImage
 }
 
 impl Related<category_model::Entity> for Entity {
@@ -117,6 +122,12 @@ impl Related<category_model::Entity> for Entity {
 impl Related<user_model::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Users.def()
+    }
+}
+
+impl  Related<image_model::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::ResourceImage.def()
     }
 }
 

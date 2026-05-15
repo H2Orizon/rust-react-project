@@ -16,6 +16,8 @@ Cargo.lock
 # Rustfmt backup
 *.rs.bk
 
+uploads
+
 
 # ==========================================
 # Node / React

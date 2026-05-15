@@ -209,4 +209,62 @@ bookButtonText: {
     fontWeight: "700"
 },
 
+carouselContainer: {
+    position: "relative",
+    width: "100%",
+    height: 260,
+    marginBottom: 16,
+},
+
+carouselImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 16,
+},
+
+carouselButton: {
+    position: "absolute",
+    top: "45%",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+},
+
+carouselLeft: {
+    left: 12,
+},
+
+carouselRight: {
+    right: 12,
+},
+
+carouselButtonText: {
+    color: "#fff",
+    fontSize: 28,
+    fontWeight: "bold",
+},
+
+dotsContainer: {
+    position: "absolute",
+    bottom: 12,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 8,
+},
+
+dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "rgba(255,255,255,0.5)",
+},
+
+activeDot: {
+    backgroundColor: "#fff",
+},
+
 })

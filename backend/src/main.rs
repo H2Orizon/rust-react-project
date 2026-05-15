@@ -1,12 +1,12 @@
 #[macro_use] extern crate rocket;
-use std::time::Duration;
+use std::{fs, time::Duration};
 
-use rocket::launch;
+use rocket::{fs::FileServer, launch};
 
 use crate::{controllers::
     {booking_controller::{create_booking, get_all_booking, get_booking, update_status}, 
     category_controller::{create_category, get_all_categories, get_category}, 
-    resource_controller::{create_resources, delete_resource, get_all_resources, get_one_resource, update_resource}, 
+    resource_controller::{create_resources, delete_image, delete_resource, get_all_resources, get_one_resource, update_resource, upload_image}, 
     user_controller::{get_profile, login, register}}, cors::cors, db::{get_figment, init_db}, services::booking_service};
 
 mod db;
@@ -32,6 +32,9 @@ async fn rocket() -> _ {
         }
     });
 
+    fs::create_dir_all("./uploads/resources")
+        .expect("Failed to create upload directories");
+
     rocket::custom(get_figment().await)
     .attach(cors())
     .manage(db)
@@ -42,7 +45,8 @@ async fn rocket() -> _ {
     .mount("/resources", routes![
         get_all_resources, get_one_resource,
         create_resources,
-        delete_resource, update_resource
+        delete_resource, update_resource,
+        upload_image, delete_image
     ])
     .mount("/user", routes![
         login, register, get_profile
@@ -51,4 +55,5 @@ async fn rocket() -> _ {
         get_all_booking, get_booking,
         create_booking, update_status
     ])
+    .mount("/uploads", FileServer::from("./uploads"))
 }

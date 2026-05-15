@@ -1,7 +1,7 @@
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait, QueryFilter};
 use validator::Validate;
 
-use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::{self, Entity as CategoriesEntity}, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, PaginatedResponseResources, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::booking_service};
+use crate::{auth::guard::AuthUser, enums::app_error::AppError, models::{category_model::{self, Entity as CategoriesEntity}, resource_model::{ActiveModel, Column, CreateResource, Entity, Model, PaginatedResponseResources, ResourceDto, ResourceListDto, ResourceQuery, UpdateResource}, user_model::Entity as UserEntity}, services::{booking_service, image_service}};
 
 pub async fn get_one_model(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{
     let resource = Entity::find_by_id(id).one(db)
@@ -46,13 +46,16 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
     let resources = paginateor.fetch_page(page-1).await?;
 
     let mut resources_dtos = Vec::new();
-    let resource_ids = resources.iter().map(|(r, _)| r.id).collect();
+    let resource_ids: Vec<i32> = resources.iter().map(|(r, _)| r.id).collect();
 
-    let booking_map = booking_service::get_booking_map(db, resource_ids).await?;
+    let booking_map = booking_service::get_booking_map(db, &resource_ids).await?;
+    let image_map = image_service::get_img_for_resource(db, &resource_ids).await?;
+
 
     for (res, category) in resources {
 
         let booked = booking_map.get(&res.id).cloned().unwrap_or(0);
+        let image = image_map.get(&res.id).cloned();
 
         resources_dtos.push(ResourceListDto{
             id: res.id,
@@ -60,8 +63,9 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
             price: res.price,
             location: res.location,
             capacity: res.capacity,
-            availble_now: res.capacity - booked as i32, //need a fix
+            availble_now: (res.capacity - booked).max(0), //need a fix
             category: category.map(|c| c.name).unwrap_or("Unknown".into()),
+            image: image
         });
     }
 
@@ -85,6 +89,8 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
 
     let booked = booking_service::get_resource_booked(db, resource.id).await?;
 
+    let images = image_service::get_all_img_for_resource(db, resource.id).await?;
+
     let next_available_at = booking_service::get_next_availeble(db, resource.id).await.unwrap_or(None);
 
     println!("Hi i have {:?}",next_available_at);
@@ -103,6 +109,7 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
         username: username,
         user_id: resource.user_id,
         auto_approved: resource.auto_approved,
+        images: Some(images)
     })
 }
 
@@ -120,7 +127,7 @@ pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser)
         location: Set(data.location),
         price: Set(data.price),
         user_id: Set(user.id),
-        auto_approved: Set(data.auto_approve),
+        auto_approved: Set(data.auto_approved),
         ..Default::default()
     };
 

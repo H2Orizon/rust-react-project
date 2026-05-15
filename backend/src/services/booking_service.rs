@@ -1,25 +1,30 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, env};
 
 use chrono::{ DateTime, Utc};
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, FromQueryResult, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
 use validator::Validate;
 
 use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model, PaginatedResponseBooking}, resource_model, user_model}, services::{resources_service, user_service}, utility};
 
+#[derive(FromQueryResult)]
+struct SumResult {
+    total: Option<i64>,
+}
+
 async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32,dto: &CreateBooking) -> Result<i32, AppError> {
 
-    let count = Entity::find()
+    let result: Option<SumResult> = Entity::find()
+        .select_only()
+        .column_as(Column::Quantity.sum(), "total")
         .filter(Column::ResourceId.eq(resource_id))
-        .filter(
-            sea_orm::Condition::any()
-                .add(Column::Status.eq(BookingStatus::Approved))
-        )
+        .filter(Column::Status.eq(BookingStatus::Approved))
         .filter(Column::StartDate.lt(dto.end_date))
         .filter(Column::EndDate.gt(dto.start_date))
-        .count(db)
+        .into_model::<SumResult>()
+        .one(db)
         .await?;
 
-    Ok(count as i32)
+    Ok(result.and_then(|r| r.total).unwrap_or(0) as i32)
 }
 
 async fn is_available(db: &DatabaseConnection, resource_id: i32, dto: &CreateBooking) -> Result<bool, AppError> {
@@ -70,22 +75,26 @@ pub async fn get_resource_booked(db: &DatabaseConnection, resource_id: i32) -> R
     Ok(booked)
 }
 
-pub async fn get_booking_map(db: &DatabaseConnection, resource_ids: Vec<i32>) -> Result<HashMap<i32, i64>, AppError> {
+//need fix
+pub async fn get_booking_map(db: &DatabaseConnection, resource_ids: &[i32]) -> Result<HashMap<i32, i32>, AppError> {
     
     let rows = Entity::find()
-            .select_only()
-            .column(Column::ResourceId)
-            .column_as(Column::Id.count(), "count")
-            .filter(Column::ResourceId.is_in(resource_ids.clone()))
-            .filter(Column::Status.eq(BookingStatus::Approved))
-            .group_by(Column::ResourceId)
-            .into_tuple::<(i32,i64)>()
-            .all(db)
-            .await?;
+        .select_only()
+        .column(Column::ResourceId)
+        .expr_as(
+            Expr::col(Column::Quantity).sum(),
+            "total"
+        )
+        .filter(Column::ResourceId.is_in(resource_ids.to_vec()))
+        .filter(Column::Status.eq(BookingStatus::Approved))
+        .group_by(Column::ResourceId)
+        .into_tuple::<(i32, Option<i64>)>()
+        .all(db)
+        .await?;
 
         let mut map = HashMap::new();
-        for (resource_id, count) in rows{
-            map.insert(resource_id, count);
+        for (resource_id, total) in rows{
+            map.insert(resource_id, total.unwrap_or(0) as i32);
         }
 
         Ok(map)
@@ -220,9 +229,9 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         return Err(AppError::ResourceNotAvailable());
     }
 
-    let is_auto_approved = resources_service::get_one(db, dto.resource_id).await?.auto_approved;
+    let resource = resources_service::get_one(db, dto.resource_id).await?;
     let mut status = BookingStatus::Pending;
-    if is_auto_approved{
+    if resource.auto_approved{
         status = BookingStatus::Approved
     };
 
@@ -237,18 +246,29 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         ..Default::default()
     };
 
-    let user_email = &user_service::get_user(db, dto.user_id).await?.email;
-    
-    let booker_id = resources_service::get_one(db, dto.resource_id).await?.user_id;
+    let booking = new_booking.insert(db).await?;
 
-    let booker_email = &user_service::get_user(db, booker_id).await?.email;
-   match utility::email_sender::send_email
-    (booker_email, user_email, "New Booking" , "new booking").await{
-        Ok(_) => println!(""),
-        Err(e) => eprint!("{e}")
-    }
+    let renter = user_service::get_user(db, dto.user_id).await?;
+    let owner = user_service::get_user(db, resource.user_id).await?;
 
-    Ok(new_booking.insert(db).await?)
+    let html = utility::email_sender::render_resource_rented_template(
+            &owner.username, 
+            &resource.name, 
+            &renter.username,
+            &dto.start_date.to_string(),
+            &dto.end_date.to_string()
+        )?;
+
+    let email = env::var("EMAIL").expect("Email No Found");
+
+    utility::email_sender::send_email(
+        &email,
+        &owner.email,
+        "New Booking",
+        &html
+    ).await?;
+
+    Ok(booking)
 }
 
 pub async fn update_status(db: &DatabaseConnection, id: i32, status: BookingStatus) -> Result<Model, AppError> {

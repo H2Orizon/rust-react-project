@@ -23,6 +23,8 @@ jsonwebtoken = { version = "10", features = ["rust_crypto"] }
 chrono = {version = "0.4", features = ["serde"]}
 rocket_cors = "0.6"
 lettre ={ version = "0.11.21", features = ["tokio1-native-tls", "smtp-transport", "serde"]}
+handlebars = "6"
+serde_json = "1"
 
 [dev-dependencies]
 sea-orm-cli = "1.1.7"

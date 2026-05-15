@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native"
+import { View, Text, Pressable, Image } from "react-native"
 import { ResourceListDto } from "@shared/types/resource"
 import { Link } from "expo-router"
 
@@ -9,12 +9,24 @@ type Props = {
 }
 
 export default function ResourceCard({ resource }: Props) {
+
+    const image = resource.image || undefined
+
     return (
         <Link href={`/resources/${resource.id}`} asChild>
             <Pressable style={styles.card}>
                 
                 <View style={styles.imagePlaceholder}>
-                    <Text style={styles.imageText}>No Image</Text>
+                    {resource.image 
+                        ? <Image source={{uri: `${process.env.EXPO_PUBLIC_API_URL}/uploads/${image?.path}`}}
+                                style={{
+                                    width: "100%",
+                                    height: 200,
+                                    borderRadius: 12
+                                }}
+                            />
+                        : <Text style={styles.imageText}>No Image</Text>
+                    }
                 </View>
 
                 <View style={styles.content}>

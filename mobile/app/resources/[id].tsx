@@ -2,12 +2,14 @@ import { useEffect, useState } from "react"
 import { ResourceDto } from "@shared/types/resource"
 import { deleteResource, getResource } from "@/api/resources"
 import { router, useLocalSearchParams  } from "expo-router"
-import { View, Text, ScrollView, Pressable, Modal } from "react-native"
+import { View, Text, ScrollView, Pressable, Modal, Image } from "react-native"
+import * as ImagePicker from "expo-image-picker"
 
 import { styles } from "app/styles/resource.styles"
 import { useAuth } from "@/context/AuthContext"
 import UpdateResource from "./UpdateResource"
 import BookingForm from "./BookingForm"
+import { api } from "@/services/api"
 
 export default function Resource(){
     const {id} = useLocalSearchParams()
@@ -17,6 +19,10 @@ export default function Resource(){
     const [error, setError] = useState<string | null>(null)
     const [openUpdateModal, setOpenUpdateModal] = useState(false)
     const [openBookingModal, setOpenBookingModal] = useState(false)
+    const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [currentImage, setCurrentImage] = useState(0)
+
+    const images = resource?.images || []
 
     const loadResource = async () => {
         if (!id) return
@@ -55,6 +61,88 @@ export default function Resource(){
         }
     }
 
+    const pickImage = async () => {
+
+        const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+        if (!permission.granted) {
+            alert("Permission denied")
+            return
+        }
+
+        const result =
+            await ImagePicker.launchImageLibraryAsync({
+                mediaTypes:
+                    ImagePicker.MediaTypeOptions.Images,
+                quality: 0.8,
+                allowsEditing: true,
+            })
+
+        if (!result.canceled) {
+            setSelectedImage(result.assets[0].uri)
+        }
+    }
+
+    const uploadImage = async () => {
+
+        if (!selectedImage || !resource.id)
+            return
+
+        const formData = new FormData()
+
+        formData.append("file", {
+            uri: selectedImage,
+            name: "image.jpg",
+            type: "image/jpeg",
+        } as any)
+
+        try {
+
+            await api.post(
+                `/resources/${resource.id}/upload`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type":
+                            "multipart/form-data",
+                    },
+                }
+            )
+
+            alert("Image uploaded")
+
+            await loadResource()
+
+            setSelectedImage(null)
+
+        } catch {
+            alert("Upload failed")
+        }
+    }
+
+    const nextImage = () => {
+
+        if (!images?.length) return
+
+        setCurrentImage((prev) =>
+            prev === images.length - 1
+                ? 0
+                : prev + 1
+        )
+    }
+
+    const prevImage = () => {
+
+        if (!images?.length) return
+
+        setCurrentImage((prev) =>
+            prev === 0
+                ? images.length - 1
+                : prev - 1
+        )
+    }
+
     return (
 
         <>
@@ -66,10 +154,84 @@ export default function Resource(){
                     </Text>
                 )}
 
-                <View style={styles.imagePlaceholder}>
-                    <Text style={styles.imageText}>
-                        Carousel Images
-                    </Text>
+                <View style={styles.carouselContainer}>
+
+                    {images?.length ? (
+
+                        <>
+                            <Image
+                                source={{
+                                    uri:
+                                        `${process.env.EXPO_PUBLIC_API_URL}/uploads/${images[currentImage].path}`
+                                }}
+                                style={styles.carouselImage}
+                                resizeMode="cover"
+                            />
+
+                            {images.length > 1 && (
+
+                                <>
+                                    <Pressable
+                                        style={[
+                                            styles.carouselButton,
+                                            styles.carouselLeft
+                                        ]}
+                                        onPress={prevImage}
+                                    >
+                                        <Text
+                                            style={styles.carouselButtonText}
+                                        >
+                                            ‹
+                                        </Text>
+                                    </Pressable>
+
+                                    <Pressable
+                                        style={[
+                                            styles.carouselButton,
+                                            styles.carouselRight
+                                        ]}
+                                        onPress={nextImage}
+                                    >
+                                        <Text
+                                            style={styles.carouselButtonText}
+                                        >
+                                            ›
+                                        </Text>
+                                    </Pressable>
+                                </>
+                            )}
+
+                            <View style={styles.dotsContainer}>
+
+                                {images.map((_, index) => (
+
+                                    <Pressable
+                                        key={index}
+                                        onPress={() =>
+                                            setCurrentImage(index)
+                                        }
+                                    >
+                                        <View
+                                            style={[
+                                                styles.dot,
+                                                currentImage === index &&
+                                                    styles.activeDot
+                                            ]}
+                                        />
+                                    </Pressable>
+                                ))}
+                            </View>
+                        </>
+
+                    ) : (
+
+                        <View style={styles.imagePlaceholder}>
+                            <Text style={styles.imageText}>
+                                No Images
+                            </Text>
+                        </View>
+                    )}
+
                 </View>
 
                 <View style={styles.content}>
@@ -172,6 +334,37 @@ export default function Resource(){
                                     }
                                 >
                                     Update Resource
+                                </Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={styles.updateButton}
+                                onPress={pickImage}
+                            >
+                                <Text style={styles.updateButtonText}>
+                                    Select Image
+                                </Text>
+                            </Pressable>
+
+                            {selectedImage && (
+                                <Image
+                                    source={{ uri: selectedImage }}
+                                    style={{
+                                        width: "100%",
+                                        height: 220,
+                                        borderRadius: 16,
+                                        marginTop: 12,
+                                    }}
+                                    resizeMode="cover"
+                                />
+                            )}
+
+                            <Pressable
+                                style={styles.bookButton}
+                                onPress={uploadImage}
+                            >
+                                <Text style={styles.bookButtonText}>
+                                    Upload Image
                                 </Text>
                             </Pressable>
 

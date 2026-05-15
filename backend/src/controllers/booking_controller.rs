@@ -27,7 +27,10 @@ pub async fn create_booking(db: &State<DatabaseConnection>, dto: Json<CreateBook
 
     match booking_service::create_booking(db, dto.into_inner()).await {
         Ok(booking) => Ok(Json(booking)),
-        Err(_) => Err(Status::BadRequest),
+        Err(e) => {
+            println!("BOOKING ERROR: {:?}", e);
+            Err(Status::BadRequest)
+        },
     }
 }
 

@@ -10,6 +10,7 @@ export type ResourceDto = {
     category: string
     username: string
     user_id: number
+    images: ImageDto[] | null
 }
 export type ResourceListDto = {
     id: number
@@ -19,6 +20,12 @@ export type ResourceListDto = {
     availble_now: number
     location?: string
     category: string
+    image?: ImageDto | null
+}
+
+export type ImageDto = {
+    id: number
+    path: string
 }
 
 export type CreateResourceDto = {
