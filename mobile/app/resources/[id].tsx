@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { ResourceDto } from "@shared/types/resource"
 import { deleteResource, getResource } from "@/api/resources"
 import { router, useLocalSearchParams  } from "expo-router"
-import { View, Text, ScrollView, Pressable, Modal, Image } from "react-native"
+import { View, Text, ScrollView, Pressable, Modal, Image, TouchableOpacity } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 
 import { styles } from "app/styles/resource.styles"
@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext"
 import UpdateResource from "./UpdateResource"
 import BookingForm from "./BookingForm"
 import { api } from "@/services/api"
+import { deleteResourceImage } from "@/api/images"
 
 export default function Resource(){
     const {id} = useLocalSearchParams()
@@ -100,7 +101,7 @@ export default function Resource(){
         try {
 
             await api.post(
-                `/resources/${resource.id}/upload`,
+                `/resources/${resource.id}/image`,
                 formData,
                 {
                     headers: {
@@ -167,6 +168,39 @@ export default function Resource(){
                                 style={styles.carouselImage}
                                 resizeMode="cover"
                             />
+                            {user?.id === resource.user_id && (
+                                <Pressable
+                                    style={styles.deleteImageButton}
+                                    onPress={async () => {
+                                        try{
+                                            const image =
+                                                images[currentImage]
+
+                                            await deleteResourceImage(
+                                                resource.id,
+                                                image.id
+                                            )
+
+                                            setResource({
+                                                ...resource,
+                                                images: (resource.images ?? []).filter(
+                                                    (_, index) =>
+                                                        index !== currentImage
+                                                )
+                                            })
+                                            setCurrentImage(0)
+                                        }catch{
+                                            setError(
+                                                "Failed to delete image"
+                                            )
+                                        }
+                                    }}
+                                >
+                                    <Text style={styles.deleteImageButtonText}>
+                                        ✕
+                                    </Text>
+                                </Pressable>
+                            )}
 
                             {images.length > 1 && (
 

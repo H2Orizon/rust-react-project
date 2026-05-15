@@ -266,5 +266,28 @@ dot: {
 activeDot: {
     backgroundColor: "#fff",
 },
+deleteImageButton: {
+    position: "absolute",
+    top: 12,
+    right: 12,
 
+    width: 36,
+    height: 36,
+
+    borderRadius: 18,
+
+    backgroundColor: "rgba(0,0,0,0.7)",
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    zIndex: 10,
+},
+
+deleteImageButtonText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+    lineHeight: 22,
+},
 })
