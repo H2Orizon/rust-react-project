@@ -1,10 +1,55 @@
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, DatabaseConnection, EntityTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter};
 use validator::Validate;
-use crate::{enums::app_error::AppError, models::category_model::{ActiveModel, CreateCategory, Entity, Model, UpdateCategory}};
+use crate::{enums::app_error::AppError, models::category_model::{ActiveModel, CategoryQuery, Column, CreateCategory, Entity, Model, PaginatedResponseCategory, UpdateCategory}};
 
 pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<Model>, AppError> {
     let categories = Entity::find().all(db).await?;
     Ok(categories)
+}
+
+pub async fn get_all_for_admin(db: &DatabaseConnection, query: CategoryQuery) -> Result<PaginatedResponseCategory, AppError> {
+    let mut q = Entity::find();
+    
+    if let Some(name) = query.name{
+        q = q.filter(Column::Name.contains(name))
+    }
+
+    if let Some(description) = query.description{
+        q = q.filter(Column::Description.contains(description))
+    }
+
+    if let Some(is_movable) = query.is_movable{
+        q = q.filter(Column::IsMovable.eq(is_movable))
+    }
+    
+    let per_page = query.per_page.unwrap_or(10).clamp(1, 100);
+    let page = query.page.unwrap_or(1).max(1);
+
+    let paginateor = q.paginate(db, per_page);
+
+    let total = paginateor.num_items().await?;
+    let total_pages = paginateor.num_pages().await?;
+    
+    let categories = paginateor.fetch_page(page-1).await?;
+
+    let mut categories_dto = Vec::new();
+
+    for category in categories {
+        categories_dto.push(Model{
+            id: category.id,
+            name: category.name,
+            description: category.description,
+            is_movable: category.is_movable
+        });
+    }
+
+    Ok(PaginatedResponseCategory{
+        categories: categories_dto,
+        total: total,
+        page: page,
+        per_page: per_page,
+        total_pages: total_pages
+    })
 }
 
 pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<Model, AppError>{

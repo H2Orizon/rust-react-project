@@ -1,5 +1,5 @@
 import { categoryService } from "@shared/api/categories"
-import type { CreateCategoryDto, UpdateCategoryDto } from "@shared/types/category"
+import type { CategoryQuery, CreateCategoryDto, UpdateCategoryDto } from "@shared/types/category"
 import { api } from "../services/api"
 
 export const getCategories = () =>
@@ -10,3 +10,6 @@ export const createCategory = (dto: CreateCategoryDto) =>
 
 export const updateCategory = (dto: UpdateCategoryDto, id: number) =>
     categoryService.update(api, id, dto).then(cat => cat.data)
+
+export const getAllCategoryForAdmin = (query?: CategoryQuery) =>
+    categoryService.getAllCategoryAdmin(api, query).then(data => data.data)

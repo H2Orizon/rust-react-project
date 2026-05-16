@@ -4,6 +4,7 @@ use sea_orm::DatabaseConnection;
 
 use crate::auth::guard::AuthUser;
 use crate::enums::user_role::UserRole;
+use crate::models::category_model::CategoryQuery;
 use crate::{models::category_model, services::category_service};
 
 #[get("/")]
@@ -13,6 +14,15 @@ pub async fn get_all_categories(db: &State<DatabaseConnection>) -> Result<Json<V
         Err(_) => Err(Status::NotFound),
     }
 }
+
+#[get("/?<query..>")]
+pub async fn get_categories_pagination(db: &State<DatabaseConnection>, query: CategoryQuery) -> Result<Json<category_model::PaginatedResponseCategory>, Status>{
+    match category_service::get_all_for_admin(db, query).await {
+        Ok(categories) => Ok(Json(categories)),
+        Err(_) => Err(Status::NotFound),
+    }
+}
+
 
 #[post("/", data="<dto>")]
 pub async fn create_category(db: &State<DatabaseConnection>, dto: Json<category_model::CreateCategory>, user: AuthUser) -> Result<Json<category_model::Model>, Status>{

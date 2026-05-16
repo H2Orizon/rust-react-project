@@ -5,9 +5,8 @@ import UpdateCategory from "../components/Admin/UpdateCategory"
 import { useNavigate } from "react-router"
 import { useEffect, useState } from "react"
 
-import type { CategoryDto } from "@shared/types/category"
-
-import { getCategories } from "@/api/categories"
+import type { CategoryDto, CategoryQuery, PaginatedCategory } from "@shared/types/category"
+import { getAllCategoryForAdmin} from "@/api/categories"
 
 export default function AdminPanel() {
 
@@ -15,33 +14,77 @@ export default function AdminPanel() {
 
     const navigation = useNavigate()
 
-    const [categories, setCategories] =
-        useState<CategoryDto[]>([])
+    const [paginate, setPaginatedCategory] =
+        useState<PaginatedCategory>()
 
     const [selectedCategory,
         setSelectedCategory] =
             useState<CategoryDto | null>(null)
 
+    const [showCreateModal, setShowCreateModal] =
+        useState(false)
+
+    const [query, setQuery] = useState<CategoryQuery>({
+        name: undefined,
+        description: undefined,
+        is_movable: undefined,
+        per_page: 10,
+        page: 1
+    })
+
     const [showModal, setShowModal] =
         useState(false)
 
-    if (
-        user &&
-        user.role.toLowerCase() !== "admin"
-    ) {
-        navigation("/")
-    }
-
-    const loadCategories = async () => {
-
-        const data = await getCategories()
-
-        setCategories(data)
-    }
-
     useEffect(() => {
-        loadCategories()
-    }, [])
+
+        console.log(query)
+
+        if (
+            user &&
+            user.role.toLowerCase() !== "admin"
+        ) {
+            navigation("/")
+        }
+
+        const timeout = setTimeout(() => {
+
+            getAllCategoryForAdmin(query)
+                .then(setPaginatedCategory)
+
+        }, 300)
+
+        return () => clearTimeout(timeout)
+
+    }, [query ,user, navigation])
+
+    const handlerChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+
+        const { name, value } = e.target
+
+        setQuery({
+            ...query,
+            [name]: value,
+        })
+    }
+
+    const mousHandler = (
+        e: React.MouseEvent<HTMLButtonElement>
+    ) => {
+
+        const { name, value } = e.currentTarget
+
+        setQuery({
+            ...query,
+            [name]: Number(value),
+        })
+    }
+
+    const totalPage = paginate?.total_pages || 0
+    const currentPage = paginate?.page || 0
+    const per_page = paginate?.per_page || 0
+    const categories = paginate?.categories || []
 
     return (
 
@@ -63,9 +106,77 @@ export default function AdminPanel() {
 
         </div>
 
+        <div className="page-filter">
+
+                <input
+                    type="text"
+                    value={query.name || ""}
+                    name="name"
+                    onChange={handlerChange}
+                    placeholder="Search category..."
+                />
+
+                <input
+                    type="text"
+                    name="description"
+                    value={query.description || ""}
+                    onChange={handlerChange}
+                    placeholder="Description"
+                />
+
+                    {[1,10,20,30].map(num => (
+                        <button
+                            key={num}
+                            value={num}
+                            name="per_page"
+                            onClick={mousHandler}
+                            className={
+                                `per-page-btn ${
+                                    per_page === num
+                                        ? "active"
+                                        : ""
+                                }`
+                            }
+                        >
+                            {num}
+                        </button>
+                    ))}
+
+                <select
+                    name="is_movable"
+                    value={
+                        query.is_movable === undefined
+                            ? ""
+                            : String(query.is_movable)
+                    }
+                    onChange={(e) =>
+                        setQuery({
+                            ...query,
+                            is_movable:
+                                e.target.value === ""
+                                    ? undefined
+                                    : e.target.value === "true"
+                        })
+                    }
+                >
+                    <option value="">
+                        All
+                    </option>
+
+                    <option value="true">
+                        Movable
+                    </option>
+
+                    <option value="false">
+                        Static
+                    </option>
+                </select>
+            </div>
+
         <div className="admin-table-card">
 
             <div className="admin-table-wrapper">
+
 
                 <table className="admin-table">
 
@@ -140,6 +251,7 @@ export default function AdminPanel() {
                                     </td>
 
                                 </tr>
+                                
                             ))
 
                         ) : (
@@ -167,13 +279,75 @@ export default function AdminPanel() {
 
                 </table>
 
+                <div className="pagination">
+
+                    <button
+                        className="pagination-btn"
+                        disabled={currentPage <= 1}
+                        onClick={() =>
+                            setQuery(prev => ({
+                                ...prev,
+                                page: currentPage - 1
+                            }))
+                        }
+                    >
+                        Prev
+                    </button>
+
+                    {Array.from({ length: totalPage }, (_, i) => i + 1)
+                        .map(pageNum => (
+
+                            <button
+                                key={pageNum}
+                                className={
+                                    `pagination-btn ${
+                                        currentPage === pageNum
+                                            ? "active"
+                                            : ""
+                                    }`
+                                }
+                                onClick={() =>
+                                    setQuery(prev => ({
+                                        ...prev,
+                                        page: pageNum
+                                    }))
+                                }
+                            >
+                                {pageNum}
+                            </button>
+                        ))}
+
+                    <button
+                        className="pagination-btn"
+                        disabled={currentPage >= totalPage}
+                        onClick={() =>
+                            setQuery(prev => ({
+                                ...prev,
+                                page: currentPage + 1
+                            }))
+                        }
+                    >
+                        Next
+                    </button>
+
+                </div>
+
             </div>
 
         </div>
 
-        <div className="admin-create-section">
-            <CreateCategory />
-        </div>
+            <div className="admin-create-section">
+
+                <button
+                    className="create-category-btn"
+                    onClick={() =>
+                        setShowCreateModal(true)
+                    }
+                >
+                    Create Category
+                </button>
+
+            </div>
 
             {showModal && selectedCategory && (
 
@@ -211,6 +385,46 @@ export default function AdminPanel() {
                         <UpdateCategory
                             category={selectedCategory}
                         />
+
+                    </div>
+
+                </div>
+            )}
+
+            {showCreateModal && (
+
+                <div
+                    className="modal-overlay"
+                    onClick={() =>
+                        setShowCreateModal(false)
+                    }
+                >
+
+                    <div
+                        className="modal-window"
+                        onClick={(e) =>
+                            e.stopPropagation()
+                        }
+                    >
+
+                        <div className="modal-header">
+
+                            <h2>
+                                Create Category
+                            </h2>
+
+                            <button
+                                className="modal-close"
+                                onClick={() =>
+                                    setShowCreateModal(false)
+                                }
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+
+                        <CreateCategory />
 
                     </div>
 

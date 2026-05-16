@@ -23,9 +23,9 @@ pub struct CreateCategory{
     pub is_movable: bool
 }
 
-#[derive(Deserialize, Validate, Debug)]
+#[derive(Deserialize, Validate, Debug, Serialize)]
 pub struct  PaginatedResponseCategory{
-    pub categores: Vec<Model>,
+    pub categories: Vec<Model>,
     pub total: u64,
     pub page: u64,
     pub per_page: u64,
@@ -38,6 +38,15 @@ pub struct UpdateCategory{
     pub name: Option<String>,
     pub description: Option<String>,
     pub is_movable: Option<bool>,
+}
+
+#[derive(FromForm, Debug)]
+pub struct CategoryQuery{
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub is_movable: Option<bool>,
+    pub per_page: Option<u64>,
+    pub page: Option<u64>,
 }
 
 #[derive(Clone, Copy, Debug, EnumIter, DeriveRelation )]
