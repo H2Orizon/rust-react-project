@@ -61,7 +61,7 @@ export default function ResourceCard({resource}: Props) {
                             Price
                         </span>
                         <strong className="resource-card-value">
-                            ${resource.price}
+                            ${resource.price}/{resource.payment_for}
                         </strong>
                     </div>
                     <div className="resource-card-meta-item">

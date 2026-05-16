@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import type { CreateCategoryDto } from "@shared/types/category";
-import { createCategory } from "@api/categories";
-export default function CreateCategory() {
+import type { CategoryDto, CreateCategoryDto } from "@shared/types/category";
+import { updateCategory } from "@api/categories";
+
+type Props = {
+    category: CategoryDto
+}
+
+export default function UpdateCategory({category}: Props) {
 
     const [error, setError] = useState<string | null>(null)
 
     const [form, setForm] = useState<CreateCategoryDto>({
-        name: "",
-        description: "",
-        is_movable: false
+        name: category.name,
+        description: category.description,
+        is_movable: category.is_movable
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -41,7 +46,7 @@ export default function CreateCategory() {
         try {
             setError(null)
 
-            await createCategory({ ...form })
+            await updateCategory(form, category.id)
 
         } catch (error) {
             setError("Failed to create resource")
@@ -54,8 +59,6 @@ export default function CreateCategory() {
         <div className="form-card">
 
             <form className="form" onSubmit={handleSubmit}>
-
-                <h2>Create Category</h2>
 
                 {error && <p className="form-error">{error}</p>}
 
@@ -79,7 +82,7 @@ export default function CreateCategory() {
                 </span>
 
                 <button className="btn-primary" type="submit">
-                    Create
+                    Update
                 </button>
 
             </form>

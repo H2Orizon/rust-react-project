@@ -4,22 +4,23 @@ use chrono::{ DateTime, Utc};
 use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, FromQueryResult, Order, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, prelude::Expr};
 use validator::Validate;
 
-use crate::{enums::{app_error::AppError, booking_status::BookingStatus}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model, PaginatedResponseBooking}, resource_model, user_model}, services::{resources_service, user_service}, utility};
+use crate::{enums::{app_error::AppError, booking_status::BookingStatus, payment_for::PaymentFor}, models::{booking_model::{ActiveModel, BookingDto, BookingQuery, Column, CreateBooking, Entity, Model, PaginatedResponseBooking}, resource_model, user_model}, services::{resources_service, user_service}, utility};
 
 #[derive(FromQueryResult)]
 struct SumResult {
     total: Option<i64>,
 }
 
-async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32,dto: &CreateBooking) -> Result<i32, AppError> {
+async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32, 
+                        start_date: DateTime<Utc> , end_date: DateTime<Utc>) -> Result<i32, AppError> {
 
     let result: Option<SumResult> = Entity::find()
         .select_only()
         .column_as(Column::Quantity.sum(), "total")
         .filter(Column::ResourceId.eq(resource_id))
         .filter(Column::Status.eq(BookingStatus::Approved))
-        .filter(Column::StartDate.lt(dto.end_date))
-        .filter(Column::EndDate.gt(dto.start_date))
+        .filter(Column::StartDate.lt(end_date))
+        .filter(Column::EndDate.gt(start_date))
         .into_model::<SumResult>()
         .one(db)
         .await?;
@@ -27,11 +28,12 @@ async fn overlapping_bookings(db: &DatabaseConnection,resource_id: i32,dto: &Cre
     Ok(result.and_then(|r| r.total).unwrap_or(0) as i32)
 }
 
-async fn is_available(db: &DatabaseConnection, resource_id: i32, dto: &CreateBooking) -> Result<bool, AppError> {
+async fn is_available(db: &DatabaseConnection, resource_id: i32, start_date: DateTime<Utc>, 
+                        end_date: DateTime<Utc>, quantity: i32) -> Result<bool, AppError> {
     let resource = resources_service::get_one_model(db, resource_id).await?;
-    let booked_now = overlapping_bookings(db, resource_id, dto).await?;
+    let booked_now = overlapping_bookings(db, resource_id, start_date, end_date).await?;
     let available = resource.capacity - booked_now;
-    Ok(available >= dto.quantity.unwrap_or(1))
+    Ok(available >= quantity)
 }
 
 async fn get_one_model(db: &DatabaseConnection,id: i32) -> Result<Model, AppError>{
@@ -68,11 +70,16 @@ pub async fn auto_upadate_status(db: &DatabaseConnection){
 }
 
 pub async fn get_resource_booked(db: &DatabaseConnection, resource_id: i32) -> Result<i32, AppError>{
-    let booked = Entity::find()
-                .filter(Column::ResourceId.eq(resource_id))
-                .filter(Column::Status.eq(BookingStatus::Approved))
-                .all(db).await?.iter().map(|b| b.quantity).sum();
-    Ok(booked)
+    let result = Entity::find()
+        .select_only()
+        .column_as(Column::Quantity.sum(), "total")
+        .filter(Column::ResourceId.eq(resource_id))
+        .filter(Column::Status.eq(BookingStatus::Approved))
+        .into_tuple::<Option<i64>>()
+        .one(db)
+        .await?;
+
+    Ok(result.flatten().unwrap_or(0) as i32)
 }
 
 //need fix
@@ -102,17 +109,18 @@ pub async fn get_booking_map(db: &DatabaseConnection, resource_ids: &[i32]) -> R
 }
 
 //need fix
-pub async fn get_next_availeble(db: &DatabaseConnection, resource_id: i32) -> Result<Option<DateTime<Utc>>, AppError>{
+pub async fn get_next_available(db: &DatabaseConnection, resource_id: i32) -> Result<Option<DateTime<Utc>>, AppError>{
     let next_available = Entity::find()
         .filter(Column::ResourceId.eq(resource_id))
+        .filter(Column::Status.eq(BookingStatus::Approved))
         .filter(Column::EndDate.gt(Utc::now()))
         .select_only()
-        .column_as(Column::EndDate, "next_available_at")
+        .column(Column::EndDate)
         .order_by_asc(Column::EndDate)
         .into_tuple::<DateTime<Utc>>()
         .one(db)
         .await?;
-    print!("next_available: {:?}",next_available);
+
     Ok(next_available)
 }
 
@@ -168,7 +176,8 @@ pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery)
             start_date: booking.start_date.and_utc(),
             end_date: booking.end_date.and_utc(),
             status: booking.status,
-            created_at: booking.created_at.and_utc()
+            created_at: booking.created_at.and_utc(),
+            total_price: booking.total_price
         });
     }
 
@@ -217,7 +226,8 @@ pub async fn get_booking(db: &DatabaseConnection, id: i32) -> Result<BookingDto,
         start_date: booking.start_date.and_utc(),
         end_date: booking.end_date.and_utc(),
         status: booking.status, 
-        created_at: booking.created_at.and_utc()
+        created_at: booking.created_at.and_utc(),
+        total_price: booking.total_price
     })
 
 }
@@ -225,7 +235,8 @@ pub async fn get_booking(db: &DatabaseConnection, id: i32) -> Result<BookingDto,
 pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Result<Model, AppError>{
     dto.validate().map_err(|e| AppError::Validation(e.to_string()))?;
 
-    if !is_available(db, dto.resource_id, &dto).await? {
+    if !is_available(db, dto.resource_id, dto.start_date, 
+                    dto.end_date, dto.quantity.unwrap_or(1)).await? {
         return Err(AppError::ResourceNotAvailable());
     }
 
@@ -233,6 +244,19 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
     let mut status = BookingStatus::Pending;
     if resource.auto_approved{
         status = BookingStatus::Approved
+    };
+
+    let booking_leng = dto.end_date - dto.start_date;
+    let quantity = dto.quantity.unwrap_or(1) as f32;
+
+    let total_price =     
+        match resource.payment_for {
+            PaymentFor::Month => 
+                (booking_leng.num_days() as f32 / 30.0).ceil().max(1.0) * quantity * resource.price,
+            PaymentFor::Day => 
+                (booking_leng.num_hours() as f32 / 24.0).ceil().max(1.0) * quantity * resource.price,
+            PaymentFor::Hour => 
+                booking_leng.num_hours().max(1) as f32 * quantity * resource.price
     };
 
     let new_booking = ActiveModel {
@@ -243,6 +267,7 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
         end_date: Set(dto.end_date.naive_utc()),
         quantity: Set(dto.quantity.unwrap_or(1)),
         status: Set(status),
+        total_price: Set(total_price),
         ..Default::default()
     };
 
@@ -272,13 +297,22 @@ pub async fn create_booking(db: &DatabaseConnection, dto:CreateBooking) -> Resul
 }
 
 pub async fn update_status(db: &DatabaseConnection, id: i32, status: BookingStatus) -> Result<Model, AppError> {
-    
-    let mut booking:ActiveModel = get_one_model(db, id).await?.into();
 
-    booking.status = Set(status);
+    let booking  = get_one_model(db, id).await?;
 
-    let booking = booking.update(db).await?;
+    let available = is_available(db, booking.id, booking.start_date.and_utc(),
+                             booking.end_date.and_utc(), booking.quantity).await?;
 
-    Ok(booking)
+    if available {
+        return Err(AppError::ResourceFull());
+    }
+
+    let mut booking_active:ActiveModel = booking.into();
+
+    booking_active.status = Set(status);
+
+    let booking_active = booking_active.update(db).await?;
+
+    Ok(booking_active)
 
 }

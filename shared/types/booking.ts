@@ -20,6 +20,7 @@ export type BookingDto = {
     end_date: string
     quantity?: number 
     status: BookingStatus
+    total_price: number
 }
 
 export type PaginatedResponseBooking = {

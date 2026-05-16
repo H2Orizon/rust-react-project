@@ -37,7 +37,7 @@ export default function ResourceCard({ resource }: Props) {
 
                     <View style={styles.row}>
                         <Text style={styles.price}>
-                            {resource.price}$
+                            ${resource.price}/{resource.payment_for}
                         </Text>
 
                         <Text style={styles.capacity}>

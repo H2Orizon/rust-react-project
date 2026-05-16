@@ -33,3 +33,16 @@ pub async fn get_category(db: &State<DatabaseConnection>, id:i32) -> Result<Json
         Err(_) => Err(Status::NotFound)
     }
 }
+
+#[patch("/<id>", format = "json", data="<dto>")]
+pub async fn update_category(db: &State<DatabaseConnection>, id:i32,dto: Json<category_model::UpdateCategory>, user: AuthUser) -> Result<Json<category_model::Model>, Status> {
+    if user.role != UserRole::Admin {
+        println!("Role?: {:?}", user.role);
+        return Err(Status::Forbidden)?;
+    }
+
+    match category_service::updare(db, dto.into_inner(), id).await {
+        Ok(category) => Ok(Json(category)),
+        Err(_) => Err(Status::InternalServerError)
+    }
+}

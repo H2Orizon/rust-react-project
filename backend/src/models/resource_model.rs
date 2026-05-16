@@ -3,7 +3,7 @@ use sea_orm::{entity::prelude::*};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::models::{category_model, image_model::{self, ImageDto}, user_model};
+use crate::{enums::payment_for::PaymentFor, models::{category_model, image_model::{self, ImageDto}, user_model}};
 
 #[derive(Clone, Debug, DeriveEntityModel, PartialEq, Serialize)]
 #[sea_orm(table_name = "resources")]
@@ -18,7 +18,8 @@ pub struct Model{
     pub created_at: NaiveDateTime,
     pub category_id: i32,
     pub user_id: i32,
-    pub auto_approved: bool
+    pub auto_approved: bool,
+    pub payment_for: PaymentFor
 }
 
 #[derive(Serialize)]
@@ -35,7 +36,8 @@ pub struct ResourceDto{
     pub username: String,
     pub user_id: i32,
     pub auto_approved: bool,
-    pub images: Option<Vec<ImageDto>>
+    pub images: Option<Vec<ImageDto>>,
+    pub payment_for: PaymentFor
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -47,7 +49,8 @@ pub struct ResourceListDto{
     pub availble_now: i32,
     pub location: String,
     pub category: String,
-    pub image: Option<ImageDto>
+    pub image: Option<ImageDto>,
+    pub payment_for: PaymentFor
 }
 
 #[derive(Deserialize, Validate, Debug)]
@@ -58,7 +61,8 @@ pub struct UpdateResource{
     pub category_id: Option<i32>,
     pub capacity: Option<i32>,
     pub location: Option<String>,
-    pub auto_approve: Option<bool>
+    pub auto_approve: Option<bool>,
+    pub payment_for: Option<PaymentFor>
 }
 
 #[derive(FromForm, Debug, Deserialize, Serialize, Validate)]
@@ -70,7 +74,8 @@ pub struct CreateResource{
     pub capacity: Option<i32>,
     pub location: String,
     pub category_id: i32,
-    pub auto_approved: bool
+    pub auto_approved: bool,
+    pub payment_for: PaymentFor
 }
 
 #[derive(FromForm, Debug)]
@@ -82,6 +87,7 @@ pub struct ResourceQuery{
     pub max_price: Option<i32>,
     pub per_page: Option<u64>,
     pub page: Option<u64>,
+    pub payment_for: Option<PaymentFor>
 }
 
 #[derive(Debug, Serialize, Deserialize)]

@@ -5,7 +5,7 @@ use rocket::{fs::FileServer, launch};
 
 use crate::{controllers::
     {booking_controller::{create_booking, get_all_booking, get_booking, update_status}, 
-    category_controller::{create_category, get_all_categories, get_category}, 
+    category_controller::{create_category, get_all_categories, get_category, update_category}, 
     resource_controller::{create_resources, delete_image, delete_resource, get_all_resources, get_one_resource, update_resource, upload_image}, 
     user_controller::{get_profile, login, register}}, cors::cors, db::{get_figment, init_db}, services::booking_service};
 
@@ -40,7 +40,7 @@ async fn rocket() -> _ {
     .manage(db)
     .mount("/categories", routes![
         get_all_categories, get_category,
-        create_category
+        create_category, update_category
         ])
     .mount("/resources", routes![
         get_all_resources, get_one_resource,

@@ -2,7 +2,7 @@ import { getCategories } from "@/api/categories"
 import { updateResource } from "@/api/resources"
 import { useAuth } from "@/context/AuthContext"
 import type { CategoryDto } from "@shared/types/category"
-import type { CreateResourceDto, ResourceDto } from "@shared/types/resource"
+import { PaymentFor, type CreateResourceDto, type ResourceDto } from "@shared/types/resource"
 import { useEffect, useState } from "react"
 
 type Props = {
@@ -28,7 +28,8 @@ export default function UpdateResource({resource}: Props){
         capacity: resource.capacity,
         location: resource.location,
         category_id: category_id,
-        auto_approve: false
+        auto_approve: false,
+        payment_for: PaymentFor.Day
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -132,6 +133,18 @@ export default function UpdateResource({resource}: Props){
                                 {c.name}
                             </option>
                         ))}
+                    </select>
+
+                    <select
+                        name="payment_for"
+                        value={form.payment_for}
+                        onChange={handleChange}
+                    >
+                        {Object.values(PaymentFor).map((p) =>
+                            <option key={p} value={p}>
+                                {p}
+                            </option>
+                        )}
                     </select>
 
                 <span>

@@ -3,7 +3,7 @@ import { createResource } from "@/api/resources"
 import { Picker } from "@react-native-picker/picker"
 import { Text } from "@react-navigation/elements"
 import { CategoryDto } from "@shared/types/category"
-import { CreateResourceDto } from "@shared/types/resource"
+import { CreateResourceDto, PaymentFor } from "@shared/types/resource"
 import { router } from "expo-router"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -30,7 +30,8 @@ export default function CreateResource() {
             capacity: 0,
             location: "",
             category_id: 1,
-            auto_approve: false 
+            auto_approve: false,
+            payment_for: PaymentFor.Day
         }
     })
 
@@ -181,6 +182,23 @@ export default function CreateResource() {
                             />
                         )}
                     />
+
+                <View style={styles.pickerWrapper}>
+
+                    <Picker
+                        selectedValue={watch("payment_for")}
+                        onValueChange={(value) =>
+                            setValue(
+                                "payment_for",
+                                value
+                            )
+                        }
+                    >
+                        {Object.values(PaymentFor).map((p) =>
+                            <Picker.Item key={p} label={p} value={p}/>
+                        )}
+                    </Picker>
+                </View>
 
                 {errors.price && (
                     <Text>

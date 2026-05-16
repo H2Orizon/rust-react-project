@@ -35,6 +35,10 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
         query = query.filter(Column::Price.lte(max_price))
     }
 
+    if let Some(payment_for) = query_param.payment_for{
+        query = query.filter(Column::PaymentFor.eq(payment_for))
+    }
+
     let per_page = query_param.per_page.unwrap_or(10).clamp(1, 100);
     let page = query_param.page.unwrap_or(1).max(1);
 
@@ -65,7 +69,8 @@ pub async fn get_all(db: &DatabaseConnection, query_param: ResourceQuery) -> Res
             capacity: res.capacity,
             availble_now: (res.capacity - booked).max(0), //need a fix
             category: category.map(|c| c.name).unwrap_or("Unknown".into()),
-            image: image
+            image: image,
+            payment_for: res.payment_for
         });
     }
 
@@ -91,7 +96,7 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
 
     let images = image_service::get_all_img_for_resource(db, resource.id).await?;
 
-    let next_available_at = booking_service::get_next_availeble(db, resource.id).await.unwrap_or(None);
+    let next_available_at = booking_service::get_next_available(db, resource.id).await.unwrap_or(None);
 
     println!("Hi i have {:?}",next_available_at);
 
@@ -109,7 +114,8 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
         username: username,
         user_id: resource.user_id,
         auto_approved: resource.auto_approved,
-        images: Some(images)
+        images: Some(images),
+        payment_for: resource.payment_for
     })
 }
 
@@ -128,6 +134,7 @@ pub async fn create(db: &DatabaseConnection, data:CreateResource, user:AuthUser)
         price: Set(data.price),
         user_id: Set(user.id),
         auto_approved: Set(data.auto_approved),
+        payment_for: Set(data.payment_for),
         ..Default::default()
     };
 
@@ -159,6 +166,10 @@ pub async fn update(db: &DatabaseConnection, id:i32, update_dto: UpdateResource)
 
     if let Some(auto_approve) = update_dto.auto_approve{
         resource.auto_approved = Set(auto_approve)
+    }
+
+    if let Some(payment_for) = update_dto.payment_for{
+        resource.payment_for = Set(payment_for)
     }
 
     let resource= resource.update(db).await?;

@@ -36,6 +36,8 @@ export default function BookingForm({resorsId}: Props){
                 startDate: value?.toDate() || new Date()
             })
         )
+
+        alert(value)
     }
 
     const handleEndChange = (value: Dayjs | null) =>{
@@ -46,6 +48,8 @@ export default function BookingForm({resorsId}: Props){
                 end_date: value?.toDate() || new Date()
             })
         )
+
+        alert(value)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
@@ -65,7 +69,6 @@ export default function BookingForm({resorsId}: Props){
 
         try {
             setError(null)
-
             await createBooking({
                 ...form,
                 start_date: startDate?.toISOString() ?? new Date().toISOString(),

@@ -3,7 +3,7 @@ import { updateResources } from "@/api/resources"
 import { Picker } from "@react-native-picker/picker"
 import { Text } from "@react-navigation/elements"
 import { CategoryDto } from "@shared/types/category"
-import { CreateResourceDto, ResourceDto } from "@shared/types/resource"
+import { CreateResourceDto, PaymentFor, ResourceDto } from "@shared/types/resource"
 import { useEffect, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { ScrollView, Switch, TextInput, TouchableOpacity, View } from "react-native"
@@ -36,7 +36,8 @@ export default function UpdateResource({resource, onUpdated}: Props) {
             capacity: resource.capacity,
             location: resource.location,
             category_id: category_id,
-            auto_approve: false
+            auto_approve: false,
+            payment_for: PaymentFor.Day
         }
     })
 
@@ -188,6 +189,30 @@ export default function UpdateResource({resource, onUpdated}: Props) {
                             />
                         )}
                     />
+
+                    <View style={styles.group}>
+
+                    <Text style={styles.label}>
+                        Payment For
+                    </Text>
+
+                    <View style={styles.pickerWrapper}>
+
+                        <Picker
+                            selectedValue={watch("payment_for")}
+                            onValueChange={(value) =>
+                                setValue(
+                                    "payment_for",
+                                    value
+                                )
+                            }
+                        >
+                            {Object.values(PaymentFor).map((p) =>
+                                <Picker.Item key={p} label={p} value={p}/>
+                            )}
+                        </Picker>
+                    </View>
+                </View>
 
                 {errors.price && (
                     <Text>

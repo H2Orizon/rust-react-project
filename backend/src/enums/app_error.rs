@@ -15,6 +15,9 @@ pub enum AppError{
     #[error("Booking NotFound")]
     BookingNotFound(),
 
+    #[error("Resource is Full")]
+    ResourceFull(),
+
     #[error("Resource NotFound")]
     ResourceNotFound(),
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import type { CreateResourceDto } from "@shared/types/resource";
+import { PaymentFor, type CreateResourceDto } from "@shared/types/resource";
 import { createResource } from "@api/resources";
 import type { CategoryDto } from "@shared/types/category";
 import { getCategories } from "@api/categories";
@@ -25,7 +25,8 @@ export default function ResourceForm(){
         capacity: 0,
         location: "",
         category_id: 1,
-        auto_approve: false
+        auto_approve: false,
+        payment_for: PaymentFor.Day
     })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -134,9 +135,21 @@ export default function ResourceForm(){
                         ))}
                     </select>
 
+                    <select
+                        name="payment_for"
+                        value={form.payment_for}
+                        onChange={handleChange}
+                    >
+                        {Object.values(PaymentFor).map((p) =>
+                            <option key={p} value={p}>
+                                {p}
+                            </option>
+                        )}
+                    </select>
+{/*todo*/} 
                 <span>
                     Autho approve?:
-                <input type="checkbox" name="auto_approve" onChange={handleChange}/>
+                    <input type="checkbox" name="auto_approve" onChange={handleChange}/>
                 </span>
                 <button 
                     className="btn-primary"

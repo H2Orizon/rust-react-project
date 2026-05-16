@@ -217,11 +217,11 @@ export default function Resource() {
                         <div className="meta-card">
 
                             <span className="meta-label">
-                                Price
+                                Price: 
                             </span>
 
                             <strong className="meta-value">
-                                ${resource.price}
+                                {" $" + resource.price}/{resource.payment_for}
                             </strong>
 
                         </div>
@@ -233,7 +233,7 @@ export default function Resource() {
                             </span>
 
                             <strong className="meta-value">
-                                {resource.capacity}
+                                {" " + resource.capacity}
                             </strong>
 
                         </div>
@@ -245,7 +245,7 @@ export default function Resource() {
                             </span>
 
                             <strong className="meta-value">
-                                {resource.category}
+                                {" " + resource.category}
                             </strong>
 
                         </div>

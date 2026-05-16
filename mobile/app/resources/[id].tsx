@@ -278,7 +278,7 @@ export default function Resource(){
 
                         <View style={styles.infoTag}>
                             <Text style={styles.infoText}>
-                                {resource.price}$
+                                ${resource.price}/{resource.payment_for}
                             </Text>
                         </View>
 

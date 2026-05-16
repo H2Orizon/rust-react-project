@@ -17,6 +17,7 @@ pub struct Model {
     pub start_date: NaiveDateTime,
     pub end_date: NaiveDateTime,
     pub status: BookingStatus,
+    pub total_price: f32,
     pub created_at: NaiveDateTime
 }
 
@@ -38,6 +39,7 @@ pub struct BookingDto{
     pub start_date: DateTime<Utc>,
     pub end_date: DateTime<Utc>,
     pub status: BookingStatus,
+    pub total_price: f32,
     pub created_at: DateTime<Utc>
 }
 

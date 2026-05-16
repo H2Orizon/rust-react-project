@@ -11,6 +11,8 @@ export type ResourceDto = {
     username: string
     user_id: number
     images: ImageDto[] | null
+    payment_for: string
+
 }
 export type ResourceListDto = {
     id: number
@@ -21,11 +23,14 @@ export type ResourceListDto = {
     location?: string
     category: string
     image?: ImageDto | null
+    payment_for: string
+
 }
 
 export type ImageDto = {
     id: number
     path: string
+
 }
 
 export type CreateResourceDto = {
@@ -36,6 +41,8 @@ export type CreateResourceDto = {
     location?: string
     category_id: number
     auto_approve: boolean
+    payment_for: string
+
 }
 
 export type PaginatedResponseResource = {
@@ -44,6 +51,7 @@ export type PaginatedResponseResource = {
     page: number
     per_page: number
     total_pages: number
+
 }
 
 export type ResourceQuery = {
@@ -54,4 +62,14 @@ export type ResourceQuery = {
     max_price?: number
     per_page?: number
     page?: number
+    payment_for?: string
+    
 }
+
+export type PaymentFor = typeof PaymentFor[keyof typeof PaymentFor]
+
+export const PaymentFor = {
+    Month: "month",
+    Day: "day",
+    Hour: "hour"
+} as const

@@ -291,6 +291,7 @@ p {
 .booking-form select,
 .auth-form input {
     width: 100%;
+    max-width: 100%;
 
     padding: 12px 14px;
 
@@ -1699,4 +1700,246 @@ select:focus {
 .delete-image-btn:hover{
     background: #dc2626;
     transform: scale(1.05);
+}
+
+/* =======================================================
+   ADMIN PANEL
+======================================================= */
+
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-title {
+    margin: 0;
+
+    font-size: 34px;
+    font-weight: 800;
+
+    color: var(--text);
+}
+
+.admin-subtitle {
+    margin-top: 8px;
+
+    color: var(--text-light);
+
+    font-size: 15px;
+}
+
+/* =======================================================
+   TABLE CARD
+======================================================= */
+
+.admin-table-card {
+    background: white;
+
+    border-radius: 28px;
+
+    box-shadow: var(--shadow-md);
+
+    overflow: hidden;
+}
+
+/* =======================================================
+   TABLE
+======================================================= */
+
+.admin-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 900px;
+}
+
+.admin-table thead {
+    background:
+        linear-gradient(
+            135deg,
+            #007bff,
+            #0056d6
+        );
+
+    color: white;
+}
+
+.admin-table th {
+    padding: 18px 20px;
+
+    text-align: left;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 18px 20px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    vertical-align: middle;
+
+    color: #374151;
+}
+
+.admin-table tbody tr {
+    transition: 0.2s ease;
+}
+
+.admin-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+/* =======================================================
+   CATEGORY CELLS
+======================================================= */
+
+.category-id {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.category-name {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.category-description {
+    max-width: 340px;
+
+    line-height: 1.6;
+
+    color: #6b7280;
+}
+
+.category-badge {
+    width: fit-content;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.category-badge.movable {
+    background: rgba(34,197,94,0.12);
+    color: #16a34a;
+}
+
+.category-badge.static {
+    background: rgba(239,68,68,0.12);
+    color: #dc2626;
+}
+
+/* =======================================================
+   ACTION BUTTONS
+======================================================= */
+
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.table-btn {
+    height: 42px;
+
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 14px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: var(--transition);
+}
+
+.table-btn.update {
+    background: rgba(0,123,255,0.12);
+    color: #007bff;
+}
+
+.table-btn.update:hover {
+    background: #007bff;
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(0,123,255,0.25);
+}
+
+.table-btn.delete {
+    background: rgba(239,68,68,0.12);
+    color: #dc2626;
+}
+
+.table-btn.delete:hover {
+    background: #dc2626;
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 20px rgba(239,68,68,0.25);
+}
+
+/* =======================================================
+   EMPTY STATE
+======================================================= */
+
+.admin-empty {
+    padding: 60px 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.admin-empty h3 {
+    margin-bottom: 10px;
+
+    font-size: 24px;
+}
+
+.admin-empty p {
+    margin: 0;
+
+    color: var(--text-light);
+}
+
+/* =======================================================
+   ADMIN CREATE SECTION
+======================================================= */
+
+.admin-create-section {
+    margin-top: 10px;
 }
