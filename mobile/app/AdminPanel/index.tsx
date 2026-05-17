@@ -33,6 +33,21 @@ export default function AdminPanel() {
         setShowCreateModal(false)
     }
 
+    const handleUpdateCategory = (
+        updatedCategory: CategoryDto
+    ) => {
+
+        setCategories(prev =>
+            prev.map(category =>
+                category.id === updatedCategory.id
+                    ? updatedCategory
+                    : category
+            )
+        )
+
+        setUpdateModal(false)
+    }
+
     useEffect(() => {
 
         if (
@@ -218,6 +233,7 @@ export default function AdminPanel() {
                             { selectedCategory &&
                                 <UpdateCategory
                                     category={selectedCategory}
+                                    onUpdated={handleUpdateCategory}
                                 />
                             }
                         </View>

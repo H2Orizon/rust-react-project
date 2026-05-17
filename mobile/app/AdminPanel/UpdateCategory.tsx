@@ -8,9 +8,10 @@ import { styles } from "app/styles/create-category.styles"
 
 type Props ={
     category: CategoryDto
+    onUpdated?: (category: CategoryDto) => void
 }
 
-export default function UpdateCategory({category}: Props){
+export default function UpdateCategory({category, onUpdated}: Props){
     const [loading, setLoading] = useState(false)
     const [serverError, setServerError] = useState("")
 
@@ -29,7 +30,12 @@ export default function UpdateCategory({category}: Props){
             setLoading(true)
             setServerError("")
 
-            await updateCategory(data, category.id)
+            const updatedCategory = await updateCategory(data, category.id)
+
+            if(onUpdated){
+                onUpdated(updatedCategory)
+            }
+
         } catch(err: any){
             setServerError("")
         } finally{

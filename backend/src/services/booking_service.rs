@@ -114,14 +114,18 @@ pub async fn get_next_available(db: &DatabaseConnection, resource_id: i32) -> Re
         .filter(Column::ResourceId.eq(resource_id))
         .filter(Column::Status.eq(BookingStatus::Approved))
         .filter(Column::EndDate.gt(Utc::now()))
-        .select_only()
-        .column(Column::EndDate)
         .order_by_asc(Column::EndDate)
-        .into_tuple::<DateTime<Utc>>()
         .one(db)
         .await?;
 
-    Ok(next_available)
+    Ok(
+    next_available.map(|b| {
+        DateTime::<Utc>::from_naive_utc_and_offset(
+            b.end_date,
+            Utc
+        )
+    })
+)
 }
 
 pub async fn get_all_booking(db: &DatabaseConnection, query_patam: BookingQuery) -> Result<PaginatedResponseBooking, sea_orm::DbErr>{

@@ -96,7 +96,15 @@ pub async fn get_one(db: &DatabaseConnection, id:i32) -> Result<ResourceDto, App
 
     let images = image_service::get_all_img_for_resource(db, resource.id).await?;
 
-    let next_available_at = booking_service::get_next_available(db, resource.id).await.unwrap_or(None);
+    let next_available_at =     
+    if booked >= resource.capacity {
+        booking_service::get_next_available(
+            db,
+            resource.id
+        ).await?
+    } else {
+        None
+    };
 
     println!("Hi i have {:?}",next_available_at);
 
