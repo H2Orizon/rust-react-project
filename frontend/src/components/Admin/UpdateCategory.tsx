@@ -49,7 +49,7 @@ export default function UpdateCategory({category}: Props) {
             await updateCategory(form, category.id)
 
         } catch (error) {
-            setError("Failed to create resource")
+            setError("Failed to update category")
         }
 
     }

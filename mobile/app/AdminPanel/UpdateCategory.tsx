@@ -1,26 +1,24 @@
-import { createCategory } from "@/api/categories";
+import { updateCategory } from "@/api/categories";
 import { CategoryDto, CreateCategoryDto } from "@shared/types/category";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ActivityIndicator, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { styles } from "app/styles/create-category.styles"
 
-type Props = {
-    modal?: boolean
-    onCreated?: (category: CategoryDto) => void
+type Props ={
+    category: CategoryDto
 }
 
-export default function CreateCategory({modal, onCreated}: Props){
-
+export default function UpdateCategory({category}: Props){
     const [loading, setLoading] = useState(false)
     const [serverError, setServerError] = useState("")
 
     const {control, watch, setValue, handleSubmit, formState:{errors}} = useForm<CreateCategoryDto>({
         defaultValues:{
-            name: "",
-            description: "",
-            is_movable: false
+            name: category.name,
+            description: category.description,
+            is_movable: category.is_movable
         }
     })
 
@@ -31,11 +29,7 @@ export default function CreateCategory({modal, onCreated}: Props){
             setLoading(true)
             setServerError("")
 
-            const newCategory = await createCategory(data)
-
-            if(onCreated){
-                onCreated(newCategory)
-            }
+            await updateCategory(data, category.id)
         } catch(err: any){
             setServerError("")
         } finally{
@@ -44,7 +38,8 @@ export default function CreateCategory({modal, onCreated}: Props){
     }
 
     return(
-        <ScrollView style={styles.card}>
+
+        <View style={styles.card}>
 
             <Text style={styles.title}>
                 Create Category
@@ -192,6 +187,6 @@ export default function CreateCategory({modal, onCreated}: Props){
 
             </TouchableOpacity>
 
-        </ScrollView>
+        </View>
     )
 }

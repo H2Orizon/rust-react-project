@@ -57,14 +57,17 @@ export default function BookingCard({booking}: Props){
                     <View style={styles.section}>
                         <Text style={styles.label}>Start:
                             <Text style={styles.value}>
-                                {" "}
-                                {new Date(booking.start_date).toLocaleString()}
+                                {" " + new Date(booking.start_date).toLocaleString()}
                             </Text>
                         </Text>
                         <Text style={styles.label}>End:
                             <Text style={styles.value}>
-                                {" "}
-                                {new Date(booking.end_date).toLocaleString()}
+                                {" " + new Date(booking.end_date).toLocaleString()}
+                            </Text>
+                        </Text>
+                        <Text style={styles.label}>Total Price:
+                            <Text style={styles.value}>
+                                {" " + booking.total_price + " $"}
                             </Text>
                         </Text>
                     </View>

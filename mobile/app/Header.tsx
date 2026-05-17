@@ -19,7 +19,7 @@ export default function Header() {
 
         {
             label: "Admin panel",
-            to: "/admin",
+            to: "/adminPanel",
             show: !!user && user.role.toLowerCase() == "admin"
         },
         {

@@ -44,7 +44,7 @@ export default function CreateCategory() {
             await createCategory({ ...form })
 
         } catch (error) {
-            setError("Failed to create resource")
+            setError("Failed to create category")
         }
 
     }

@@ -83,6 +83,16 @@ export default function BookingCard({booking}: Props) {
                         ).toLocaleString()}
                     </span>
                 </div>
+                <div className="booking-info-box">
+                    <span className="booking-label">
+                        Total Price
+                    </span>
+                    <span className="booking-value">
+                        {
+                            booking.total_price + " $"
+                        }
+                    </span>
+                </div>
             </div>
             <div className="booking-card-grid">
                 <div className="booking-info-box">
