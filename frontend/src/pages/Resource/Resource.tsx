@@ -58,6 +58,8 @@ export default function Resource() {
     }
 
     const delete_resource = async (id: number) => {
+        if (user?.id !== resource.user_id) return
+
         try {
             setError(null)
             await deleteResource(id)
@@ -279,15 +281,16 @@ export default function Resource() {
 
                     <div className="resource-actions">
 
-                        <button
-                            className="btn-primary"
-                            onClick={() =>
-                                setShowBooking(true)
-                            }
-                        >
-                            Book Resource
-                        </button>
-
+                        {user &&
+                            <button
+                                className="btn-primary"
+                                onClick={() =>
+                                    setShowBooking(true)
+                                }
+                            >
+                                Book Resource
+                            </button>
+                        }
                         {user?.id === resource.user_id && (
                             <>
                                 <button

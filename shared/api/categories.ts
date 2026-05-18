@@ -1,9 +1,9 @@
 import type { AxiosInstance } from "axios";
-import type { CreateCategoryDto, CategoryQuery, UpdateCategoryDto } from "../types/category"
+import type { CreateCategoryDto, CategoryQuery, UpdateCategoryDto, CategoryDto } from "../types/category"
 
 export const categoryService = {
     getAll: (api: AxiosInstance) =>
-        api.get("/categories/"),
+        api.get<CategoryDto[]>("/categories/"),
 
     create: (api: AxiosInstance, dto: CreateCategoryDto) =>
         api.post("/admin/", dto),
@@ -12,5 +12,8 @@ export const categoryService = {
         api.patch(`/admin/${id}`, dto),
 
     getAllCategoryAdmin: (api: AxiosInstance, query?: CategoryQuery) =>
-        api.get("/admin/", { params:query })
+        api.get("/admin/", { params:query }),
+
+    delete: (api: AxiosInstance, id: number) =>
+        api.delete(`/admin/${id}`)
 }

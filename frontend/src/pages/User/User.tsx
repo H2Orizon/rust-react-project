@@ -68,7 +68,7 @@ export default function UserProfile(){
 
                     <div className="profile-info-item">
                         <span className="profile-label">
-                            City:
+                            Location:
                         </span>
 
                         <span className="profile-value">

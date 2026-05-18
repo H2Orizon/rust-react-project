@@ -6,7 +6,7 @@ import { useNavigate } from "react-router"
 import { useEffect, useState } from "react"
 
 import type { CategoryDto, CategoryQuery, PaginatedCategory } from "@shared/types/category"
-import { getAllCategoryForAdmin} from "@/api/categories"
+import { deleteCategory, getAllCategoryForAdmin} from "@/api/categories"
 
 export default function AdminPanel() {
 
@@ -14,16 +14,11 @@ export default function AdminPanel() {
 
     const navigation = useNavigate()
 
-    const [paginate, setPaginatedCategory] =
-        useState<PaginatedCategory>()
+    const [paginate, setPaginatedCategory] = useState<PaginatedCategory>()
+    const [error, setError] = useState<string | null>(null)
 
-    const [selectedCategory,
-        setSelectedCategory] =
-            useState<CategoryDto | null>(null)
-
-    const [showCreateModal, setShowCreateModal] =
-        useState(false)
-
+    const [selectedCategory, setSelectedCategory] = useState<CategoryDto | null>(null)
+    const [showCreateModal, setShowCreateModal] = useState(false)
     const [query, setQuery] = useState<CategoryQuery>({
         name: undefined,
         description: undefined,
@@ -79,6 +74,18 @@ export default function AdminPanel() {
             ...query,
             [name]: Number(value),
         })
+    }
+
+    const delete_category = async (id: number) =>{
+        if (user?.role.toLowerCase() !== "admin") navigation("/")
+
+        try{
+            await deleteCategory(id)
+            setError(null)
+
+        }catch{
+            setError("Failed to delete category")
+        }
     }
 
     const totalPage = paginate?.total_pages || 0
@@ -241,6 +248,9 @@ export default function AdminPanel() {
                                             </button>
 
                                             <button
+                                                onClick={() => {
+                                                    delete_category(c.id)
+                                                }}
                                                 className="table-btn delete"
                                             >
                                                 Delete

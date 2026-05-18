@@ -2,16 +2,20 @@ import { RegisterUserDto } from "@shared/types/users";
 import { View, Text, TextInput, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import {useForm, Controller} from "react-hook-form";
 import { registerUser } from "@/api/users";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import PhoneInput from "react-native-phone-number-input"
+import { useLocationForm } from "@shared/hooks/useLocationForm"
 
 import { styles } from "app/styles/register.styles";
 import { router } from "expo-router";
+import { Picker } from "@react-native-picker/picker";
 
 export default function Register(){
     const [loading, setLoading] = useState(false)
     const [serverError, setServerError] = useState("")
+    const phoneInput = useRef<PhoneInput>(null)
 
-    const {control, watch, handleSubmit, formState: {errors}} = useForm<RegisterUserDto>({
+    const {control, watch, setValue, handleSubmit, formState: {errors}} = useForm<RegisterUserDto>({
         defaultValues: {
             username: "",
             email: "",
@@ -23,6 +27,14 @@ export default function Register(){
     })
 
     const password = watch("password")
+    const locationForm = useLocationForm()
+
+    useEffect(() => {
+        setValue(
+            "city",
+            locationForm.location
+        )
+    }, [locationForm.location])
 
     const onSubmit = async(data: RegisterUserDto) => {
         try{
@@ -99,20 +111,26 @@ export default function Register(){
                 </Text>
                 )}
 
-                <Controller
-                    control={control}
-                    name="phone"
-                    rules={{required: "Phone is required"}}
-                    render={({field: {onChange, onBlur, value} }) => (
-                        <TextInput
-                            placeholder="Phone"
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                            keyboardType="phone-pad"
-                        />
-                    )}
+                <PhoneInput 
+                    ref={phoneInput}
+                    layout="first"
+                    onChangeFormattedText={(text) => {
+                        setValue(
+                            "phone",
+                            text
+                        )
+                    }}
+
+                    
+                    containerStyle={{
+                        width: "100%",
+                        borderRadius: 12,
+                        marginBottom: 12
+                    }}
+
+                    textContainerStyle={{
+                        borderRadius: 12
+                    }}
                 />
 
                 {errors.phone && (
@@ -121,20 +139,96 @@ export default function Register(){
                 </Text>
                 )}
 
-                <Controller
-                    control={control}
-                    name="city"
-                    rules={{required: "City is required"}}
-                    render={({field: {onChange, onBlur, value} }) => (
-                        <TextInput
-                            placeholder="City"
-                            style={styles.input}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                        />
-                    )}
-                />
+                <View style={styles.group}>
+
+                    <Text style={styles.label}>
+                        Country
+                    </Text>
+
+                    <View style={styles.pickerWrapper}>
+
+                        <Picker
+                            selectedValue={
+                                locationForm.country
+                            }
+
+                            onValueChange={(value) =>
+                                locationForm.selectCountry(
+                                    String(value)
+                                )
+                            }
+                        >
+
+                            <Picker.Item
+                                label="Select country"
+                                value=""
+                            />
+
+                            {locationForm.countries.map(c => (
+
+                                <Picker.Item
+                                    key={c.cca2}
+
+                                    label={
+                                        `${c.flag} ${c.name.common}`
+                                    }
+
+                                    value={c.name.common}
+                                />
+                            ))}
+
+                        </Picker>
+
+                    </View>
+
+                </View>
+
+                {locationForm.country && (
+
+                    <View style={styles.group}>
+
+                        <Text style={styles.label}>
+                            City
+                        </Text>
+
+                        <View style={styles.pickerWrapper}>
+
+                            <Picker
+                                selectedValue={
+                                    locationForm.city
+                                }
+
+                                onValueChange={(value) =>
+                                    locationForm.selectCity(
+                                        String(value)
+                                    )
+                                }
+                            >
+
+                                <Picker.Item
+                                    label="Select city"
+                                    value=""
+                                />
+
+                                {locationForm.cities.map(c => (
+
+                                    <Picker.Item
+                                        key={c}
+                                        label={c}
+                                        value={c}
+                                    />
+                                ))}
+
+                            </Picker>
+
+                        </View>
+
+                        <Text style={styles.locationText}>
+                            {watch("city")}
+                        </Text>
+
+                    </View>
+                )}
 
                 {errors.city && (
                 <Text style={styles.errorText}>

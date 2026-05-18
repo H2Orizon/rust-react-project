@@ -1960,3 +1960,42 @@ select:focus {
 .create-category-btn:hover{
     background:#1d4ed8;
 }
+
+.auth-form input,
+.auth-form select {
+    width: 100%;
+
+    height: 54px;
+
+    padding: 0 16px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    background: #fafafa;
+
+    font-size: 15px;
+    font-family: inherit;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+
+    appearance: none;
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+    outline: none;
+
+    border-color: #007bff;
+
+    background: white;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 0 0 4px rgba(0,123,255,0.12);
+}

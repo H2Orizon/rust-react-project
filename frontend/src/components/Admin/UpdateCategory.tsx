@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { CategoryDto, CreateCategoryDto } from "@shared/types/category";
 import { updateCategory } from "@api/categories";
+import CategoryForm from "@/components/Admin/CategoryForm"
 
 type Props = {
     category: CategoryDto
@@ -62,24 +63,10 @@ export default function UpdateCategory({category}: Props) {
 
                 {error && <p className="form-error">{error}</p>}
 
-                <input 
-                    name="name"
-                    placeholder="Category name"
-                    value={form.name}
-                    onChange={handleChange}
+                <CategoryForm 
+                    form={form}
+                    handleChange={handleChange}
                 />
-
-                <textarea 
-                    name="description"
-                    placeholder="Description"
-                    value={form.description}
-                    onChange={handleChange}
-                />
-
-                <span>
-                    Is Movable?:
-                    <input type="checkbox" name="is_movable" onChange={handleChange}/>
-                </span>
 
                 <button className="btn-primary" type="submit">
                     Update

@@ -13,3 +13,6 @@ export const updateCategory = (dto: UpdateCategoryDto, id: number) =>
 
 export const getAllCategoryForAdmin = (query?: CategoryQuery) =>
     categoryService.getAllCategoryAdmin(api, query).then(data => data.data)
+
+export const deleteCategory = (id: number) =>
+    categoryService.delete(api, id)

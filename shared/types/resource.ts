@@ -40,7 +40,7 @@ export type CreateResourceDto = {
     capacity?: number
     location?: string
     category_id: number
-    auto_approve: boolean
+    auto_approved: boolean
     payment_for: string
 
 }

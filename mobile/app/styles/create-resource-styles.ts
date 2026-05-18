@@ -157,5 +157,11 @@ export const styles = StyleSheet.create({
         color: "#dc2626",
         fontSize: 13,
         fontWeight: "500"
+    },
+    locationText: {
+        marginTop: 8,
+        fontSize: 14,
+        color: "#6b7280"
     }
+    
 })

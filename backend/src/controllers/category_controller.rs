@@ -56,3 +56,19 @@ pub async fn update_category(db: &State<DatabaseConnection>, id:i32,dto: Json<ca
         Err(_) => Err(Status::InternalServerError)
     }
 }
+
+#[delete("/<id>")]
+pub async  fn delete_category(db: &State<DatabaseConnection>, id:i32, user: AuthUser) -> Status {
+    if user.id == 0 {
+        return Status::NonAuthoritativeInformation;
+    }
+
+    if user.role != UserRole::Admin{
+        return Status::Forbidden;
+    }
+
+    match category_service::delete(db, id).await {
+        Ok(_) => Status::NoContent,
+        Err(_) => Status::NotFound
+    }
+}

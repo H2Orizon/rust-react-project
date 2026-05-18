@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import type { CreateCategoryDto } from "@shared/types/category";
 import { createCategory } from "@api/categories";
+import CategoryForm from "@/components/Admin/CategoryForm"
+
 export default function CreateCategory() {
 
     const [error, setError] = useState<string | null>(null)
@@ -59,24 +61,10 @@ export default function CreateCategory() {
 
                 {error && <p className="form-error">{error}</p>}
 
-                <input 
-                    name="name"
-                    placeholder="Category name"
-                    value={form.name}
-                    onChange={handleChange}
+                <CategoryForm 
+                    form={form}
+                    handleChange={handleChange}
                 />
-
-                <textarea 
-                    name="description"
-                    placeholder="Description"
-                    value={form.description}
-                    onChange={handleChange}
-                />
-
-                <span>
-                    Is Movable?:
-                    <input type="checkbox" name="is_movable" onChange={handleChange}/>
-                </span>
 
                 <button className="btn-primary" type="submit">
                     Create

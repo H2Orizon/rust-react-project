@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { RegisterUserDto } from "@shared/types/users";
 import { registerUser } from "@api/users";
+import PhoneInput, {isPossiblePhoneNumber} from "react-phone-number-input"
+import "react-phone-number-input/style.css"
+import { useLocationForm } from "@shared/hooks/useLocationForm";
 
 export default function Register(){
 
@@ -9,6 +12,7 @@ export default function Register(){
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [phone, setPhone] = useState("")
 
     const [form, setForm] = useState<RegisterUserDto>({
         username: "",
@@ -18,6 +22,17 @@ export default function Register(){
         password: "",
         password_conf: ""
     })
+    
+    const locationForm = useLocationForm(form.city)
+
+    useEffect(() => {
+        setForm(prev => ({
+            ...prev,
+            city:
+                locationForm.location
+        }))
+
+    }, [locationForm.location])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setForm({
@@ -33,6 +48,10 @@ export default function Register(){
 
         if(form.password !== form.password_conf){
             return "Passwords don't match"
+        }
+
+        if(!isPossiblePhoneNumber(phone)){
+            return "Invalid phone number"
         }
 
         return
@@ -51,7 +70,7 @@ export default function Register(){
             setLoading(true)
             setError(null)
 
-            await registerUser(form)
+            await registerUser({...form, phone})
 
             navigator("/auth/login")
         } catch (err) {
@@ -60,6 +79,14 @@ export default function Register(){
             setLoading(false)
         }
     }
+
+       useEffect(() => {
+            setForm(prev => ({
+                ...prev,
+                city: locationForm.location
+            }))
+        }, [])
+        
 
 return(
         <div className="auth-container">
@@ -81,16 +108,52 @@ return(
                         value={form.email}
                         onChange={handleChange}
                     />
-                    <input name="phone"
-                        placeholder="phone number (optional)"
-                        value={form.phone}
-                        onChange={handleChange}
+
+                    <PhoneInput
+                        international
+                        value={phone}
+                        onChange={(value) =>
+                            setPhone(value || "")
+                        }
                     />
-                    <input name="city"
-                        placeholder="City (optional)"
-                        value={form.city}
-                        onChange={handleChange}
-                    />
+
+                    <select
+                        name="country"
+                        onChange={(e) =>
+                            locationForm.selectCountry(
+                                e.target.value
+                            )
+                        }
+                        value={locationForm.country || ""}
+                    >
+                        <option selected disabled>Select a country</option>
+                        <option value="">"N/A"</option>
+                        {locationForm.countries.map(c => (
+                            <option key={c.cca2} value={c.name.common}>
+                                {c.flag + " " + c.name.common}
+                            </option>
+                        ))}
+                    </select>
+
+                    {locationForm.country && (
+                        <>
+                        <select
+                            name="city"
+                            onChange={(e) => locationForm.selectCity(e.target.value)}
+                            value={locationForm.city || ""}
+                        >
+                            <option selected value={""} disabled>Select a city</option>
+                            <option value={""}>"N/A"</option>
+                            {locationForm.cities.map(c => (
+                                <option key={c} value={c}>
+                                    {c}
+                                </option>
+                            ))}
+                        </select> 
+                        <span>{form.city}</span>
+                        </>
+                    )}
+
                     <input name="password"
                         type="password"
                         placeholder="Password"

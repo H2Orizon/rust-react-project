@@ -5,8 +5,11 @@ import type { PaginatedResponseResource, ResourceQuery } from "@shared/types/res
 import { getResources } from "@api/resources";
 import type { CategoryDto } from "@shared/types/category";
 import { getCategories } from "@api/categories";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Resources() {
+    const {user} = useAuth()
+
     const [data, setData] = useState<PaginatedResponseResource>()
     const [categories, setCategories] = useState<CategoryDto[]>([])
     const [query, setQuery] = useState<ResourceQuery>({
@@ -55,17 +58,14 @@ export default function Resources() {
             <div className="page-header">
                 <h1>Resources</h1>
                 <div className="page-actions">
-                    <Link to="/resources/create">
-                        <button className="btn-primary">
-                            Create Resource
-                        </button>
-                    </Link>
+                    {user &&(
+                        <Link to="/resources/create">
+                                <button className="btn-primary">
+                                Create Resource
+                            </button>
+                        </Link>
+                    )}
 
-                    <Link to="/category/create">
-                        <button className="btn-outline">
-                            Create Category
-                        </button>
-                    </Link>
                 </div>
             </div>
 

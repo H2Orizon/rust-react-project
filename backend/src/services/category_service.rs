@@ -1,6 +1,6 @@
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, ActiveValue::Set, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter, TransactionTrait, prelude::Expr};
 use validator::Validate;
-use crate::{enums::app_error::AppError, models::category_model::{ActiveModel, CategoryQuery, Column, CreateCategory, Entity, Model, PaginatedResponseCategory, UpdateCategory}};
+use crate::{enums::app_error::AppError, models::{category_model::{ActiveModel, CategoryQuery, Column, CreateCategory, Entity, Model, PaginatedResponseCategory, UpdateCategory}, resource_model}};
 
 pub async fn get_all(db: &DatabaseConnection) -> Result<Vec<Model>, AppError> {
     let categories = Entity::find().all(db).await?;
@@ -94,7 +94,19 @@ pub async fn updare(db: &DatabaseConnection, data: UpdateCategory, id:i32) -> Re
     
 }
 
-// pub async fn delete(db: &DatabaseConnection, id: i32) -> Result<(), sea_orm::DbErr>{
-//     Entity::delete_by_id(id).exec(db).await?;
-//     Ok(())
-// }
+pub async fn delete(db: &DatabaseConnection, id: i32) -> Result<(), sea_orm::DbErr>{
+
+    let txn = db.begin().await?;
+
+    resource_model::Entity::update_many()
+        .col_expr(resource_model::Column::CategoryId, Expr::value(1))
+        .filter(resource_model::Column::CategoryId.eq(id))
+        .exec(&txn)
+        .await?;
+
+    Entity::delete_by_id(id).exec(db).await?;
+    
+    txn.commit().await?;
+
+    Ok(())
+}

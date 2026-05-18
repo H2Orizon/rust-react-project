@@ -27,6 +27,17 @@ export const styles = StyleSheet.create({
     color: "#18181b",
   },
 
+  group: {
+    marginBottom: 18,
+  },
+
+  label: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: "#18181b",
+  },
+
   input: {
     backgroundColor: "#f4f4f5",
     borderWidth: 1,
@@ -35,6 +46,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
+    marginBottom: 10,
+  },
+
+  pickerWrapper: {
+    backgroundColor: "#f4f4f5",
+    borderWidth: 1,
+    borderColor: "#e4e4e7",
+    borderRadius: 12,
+    overflow: "hidden",
     marginBottom: 10,
   },
 
@@ -63,5 +83,10 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 12,
     fontSize: 14,
+  },
+
+  locationText: {
+    marginTop: 8,
+    color: "#6b7280",
   },
 });
