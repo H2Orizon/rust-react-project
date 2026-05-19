@@ -9,6 +9,7 @@ import { useLocationForm } from "@shared/hooks/useLocationForm"
 import { styles } from "app/styles/register.styles";
 import { router } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
+import Toast from "react-native-toast-message";
 
 export default function Register(){
     const [loading, setLoading] = useState(false)
@@ -45,6 +46,12 @@ export default function Register(){
 
             router.replace("/user/login")
         } catch(err){
+
+            Toast.show({
+                type: "error",
+                text1: "Failed to create account"
+            })
+
             setServerError("Registration failed")
         } finally {
             setLoading(false)

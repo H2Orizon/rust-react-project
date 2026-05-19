@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { CategoryDto, CreateCategoryDto } from "@shared/types/category";
 import { updateCategory } from "@api/categories";
 import CategoryForm from "@/components/Admin/CategoryForm"
+import toast from "react-hot-toast";
 
 type Props = {
     category: CategoryDto
@@ -48,6 +49,8 @@ export default function UpdateCategory({category}: Props) {
             setError(null)
 
             await updateCategory(form, category.id)
+
+            toast.success("Category Updated")
 
         } catch (error) {
             setError("Failed to update category")

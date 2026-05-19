@@ -5,6 +5,7 @@ import { registerUser } from "@api/users";
 import PhoneInput, {isPossiblePhoneNumber} from "react-phone-number-input"
 import "react-phone-number-input/style.css"
 import { useLocationForm } from "@shared/hooks/useLocationForm";
+import toast from "react-hot-toast";
 
 export default function Register(){
 
@@ -74,6 +75,8 @@ export default function Register(){
 
             navigator("/auth/login")
         } catch (err) {
+            toast.error("Faild to create Account")
+
             setError("Failed to create account")
         }finally{
             setLoading(false)

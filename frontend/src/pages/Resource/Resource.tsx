@@ -4,8 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 import BookingForm from "../../components/Booking/BookingForm";
 import type { ResourceDto } from "@shared/types/resource";
 import { deleteResource, getResource } from "@api/resources";
-import UpdateResource from "@/components/Resource/UpdateResourceFrom";
+import UpdateResource from "@/components/Resource/UpdateResource";
 import { deleteResourceImage, uploadResourceImage } from "@/api/images";
+import toast from "react-hot-toast";
 
 export default function Resource() {
 
@@ -33,8 +34,7 @@ export default function Resource() {
 
             await uploadResourceImage(Number(id), selectFile)
 
-            alert("Image upload")
-
+            toast.success("Image upload")
             setSelectFile(null)
         }catch{
 

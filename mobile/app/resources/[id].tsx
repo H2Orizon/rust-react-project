@@ -11,6 +11,7 @@ import UpdateResource from "./UpdateResource"
 import BookingForm from "./BookingForm"
 import { api } from "@/services/api"
 import { deleteResourceImage } from "@/api/images"
+import Toast from "react-native-toast-message"
 
 export default function Resource(){
     const {id} = useLocalSearchParams()
@@ -56,8 +57,18 @@ export default function Resource(){
             await deleteResource(id)
 
             router.push("/")
+
+            Toast.show({
+                type: "info",
+                text1: "Resource Deleted"
+            })
             
         }catch(error){
+            Toast.show({
+                type:"error",
+                text1:"Cant Delete Resource"
+            })
+
             setError("Failed to delete resource")
         }
     }
@@ -111,14 +122,20 @@ export default function Resource(){
                 }
             )
 
-            alert("Image uploaded")
+            Toast.show({
+                type: "success",
+                text1: "Successfull Upload Image"
+            })
 
             await loadResource()
 
             setSelectedImage(null)
 
         } catch {
-            alert("Upload failed")
+            Toast.show({
+                type: "error",
+                text1: "Upload Failed"
+            })
         }
     }
 

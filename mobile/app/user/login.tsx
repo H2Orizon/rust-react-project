@@ -6,6 +6,7 @@ import styles from "app/styles/login.styles";
 import { TextInput, View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import Toast from "react-native-toast-message";
 
 export default function Login() {
     const [loading, setLoading] = useState(false)
@@ -26,10 +27,19 @@ export default function Login() {
             const token = await loginUser(data)
             await login(token)
 
+            Toast.show({
+                type: "success",
+                text1: "Welcome"
+            })
+
             router.replace("/")
         }catch(err: any){
-            console.log("STATUS:", err.response?.status)
-            console.log("DATA:", err.response?.data)
+
+            Toast.show({
+                type: "error",
+                text1: "Invalid Credentials"
+            })
+
             setServerError("Invalid credentials")
         } finally {
             setLoading(false)

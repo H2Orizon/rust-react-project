@@ -11,6 +11,7 @@ import { ScrollView, TouchableOpacity, View } from "react-native"
 import { styles } from "app/styles/create-resource-styles"
 import { useAuth } from "@/context/AuthContext"
 import ResourceForm from "./resources/ResourceForm"
+import Toast from "react-native-toast-message"
 
 export default function CreateResource() {
     const {user} = useAuth()
@@ -49,6 +50,11 @@ export default function CreateResource() {
 
             router.replace(`/`)
         }catch(err){
+            Toast.show({
+                type: "error",
+                text1: "Create Resource Failed"
+            })
+
             setError("Create Resource Failed")
         } finally{
             setLoading(false)

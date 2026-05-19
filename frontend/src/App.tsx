@@ -7,9 +7,16 @@ import Login from "./pages/User/Login"
 import AdminPanel from "./pages/AdminPanel"
 import MainLayout from "./layouts/MainLayout"
 import UserProfile from "./pages/User/User"
+import { Toaster } from "react-hot-toast"
 
 function App() {
   return (
+    <>
+      <Toaster 
+        position="top-left"
+        reverseOrder={false}
+      />
+
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Resources />}/>
@@ -22,6 +29,7 @@ function App() {
       <Route path="/auth/register" element={<Register />}/>
       <Route path="/auth/login" element={<Login />}/>
     </Routes>
+    </>
   )
 }
 

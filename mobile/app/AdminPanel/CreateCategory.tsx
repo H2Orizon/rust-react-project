@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { ActivityIndicator, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { styles } from "app/styles/create-category.styles"
+import Toast from "react-native-toast-message";
 
 type Props = {
     modal?: boolean
@@ -36,8 +37,17 @@ export default function CreateCategory({modal, onCreated}: Props){
             if(onCreated){
                 onCreated(newCategory)
             }
+
+            Toast.show({
+                type: "success",
+                text1: "Category Created"
+            })
         } catch(err: any){
             setServerError("")
+            Toast.show({
+                type: "error",
+                text1: "Failed Create Category"
+            })
         } finally{
             setLoading(false)
         }

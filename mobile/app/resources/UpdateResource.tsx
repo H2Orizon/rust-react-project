@@ -9,6 +9,7 @@ import { ScrollView, TouchableOpacity, View } from "react-native"
 import ResourceForm from "./ResourceForm"
 
 import { styles } from "app/styles/create-resource-styles"
+import Toast from "react-native-toast-message"
 
 type Props = {
     resource: ResourceDto
@@ -50,8 +51,17 @@ export default function UpdateResource({resource, onUpdated}: Props) {
 
             onUpdated()
 
+            Toast.show({
+                type: "success",
+                text1: "Resource Successfully Updated"
+            })
+
         }catch(err){
-            setError("Create Resource Failed")
+            Toast.show({
+                type: "error",
+                text1: "Failed Update Resource"
+            })
+            setError("Failed Update Resource")
         } finally{
             setLoading(false)
         }

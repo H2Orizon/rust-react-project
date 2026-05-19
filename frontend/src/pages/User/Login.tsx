@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useAuth } from "../../context/AuthContext";
 import type { UserLoginDto } from "@shared/types/users";
 import { loginUser } from "@api/users";
+import toast from "react-hot-toast"
 
 export default function Login() {
     const navigate = useNavigate()
@@ -29,9 +30,13 @@ export default function Login() {
             setError(null)
             login(await loginUser(form))
 
+            toast.success("Welcome")
+
             navigate("/")
 
         } catch (error) {
+            toast.error("Login Failed")
+
             setError("Invalid credentials")
         }
     }

@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { ActivityIndicator, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import { styles } from "app/styles/create-category.styles"
+import Toast from "react-native-toast-message";
 
 type Props ={
     category: CategoryDto
@@ -36,8 +37,18 @@ export default function UpdateCategory({category, onUpdated}: Props){
                 onUpdated(updatedCategory)
             }
 
+            Toast.show({
+                type: "info",
+                text1: "Category Updated"
+            })
+
         } catch(err: any){
-            setServerError("")
+            setServerError("Failed Update Category")
+
+            Toast.show({
+                type: "error",
+                text1: "Failed Update Category"
+            })
         } finally{
             setLoading(false)
         }

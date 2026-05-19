@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { CreateCategoryDto } from "@shared/types/category";
 import { createCategory } from "@api/categories";
 import CategoryForm from "@/components/Admin/CategoryForm"
+import toast from "react-hot-toast";
 
 export default function CreateCategory() {
 
@@ -44,6 +45,8 @@ export default function CreateCategory() {
             setError(null)
 
             await createCategory({ ...form })
+
+            toast.success("Category Created")
 
         } catch (error) {
             setError("Failed to create category")

@@ -5,6 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { useAuth } from "../../context/AuthContext"
 import type { CreateBookingDto } from "@shared/types/booking"
 import { createBooking } from "@api/bookings"
+import toast from "react-hot-toast"
 
 type Props={
     resorsId:number
@@ -74,6 +75,8 @@ export default function BookingForm({resorsId}: Props){
                 start_date: startDate?.toISOString() ?? new Date().toISOString(),
                 end_date: endDate?.toISOString() ?? new Date().toISOString()
             })
+
+            toast.success("Booking Created")
 
         } catch (error) {
             setError("Failed to create booking")

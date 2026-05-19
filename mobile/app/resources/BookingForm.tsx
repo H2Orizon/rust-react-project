@@ -7,6 +7,7 @@ import { Text, TextInput, TouchableOpacity, View } from "react-native"
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker"
 
 import { styles } from "app/styles/booking-form.styles"
+import Toast from "react-native-toast-message"
 
 type Props = {
     resorsId:number
@@ -174,7 +175,16 @@ export default function BookingForm({resorsId}: Props){
             setLoading(true)
 
             await createBooking(data)
+
+            Toast.show({
+                type:"success",
+                text1: "Booking Created Successfully"
+            })
         }catch(err: any){
+            Toast.show({
+                type:"error",
+                text1: "Failed to create booking"
+            })
             setServerError("Failed to create booking")
         }finally{
             setLoading(false)

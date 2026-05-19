@@ -7,6 +7,7 @@ import type { CategoryDto } from "@shared/types/category"
 import { PaymentFor, type CreateResourceDto, type ResourceDto } from "@shared/types/resource"
 
 import React, { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 
 type Props = {
     resource: ResourceDto
@@ -109,6 +110,8 @@ export default function UpdateResource({resource}: Props){
                     category_id: Number(form.category_id)
                 }
             )
+
+            toast.success("Resource Updated")
 
             window.location.reload()
 
